@@ -90,11 +90,11 @@ void SceneMovement::Update(double dt)
 
 		double x, y;
 		Application::GetCursorPos(&x, &y);
-		int w = Application::GetWindowWidth();
-		int h = Application::GetWindowHeight();
+		int windowWidth = Application::GetWindowWidth();
+		int windowHeight = Application::GetWindowHeight();
 
-		float posX = static_cast<float>(x) / w * m_worldWidth;
-		float posY = (h - static_cast<float>(y)) / h * m_worldHeight;
+		float posX = static_cast<float>(x) / windowWidth * m_worldWidth;
+		float posY = (windowHeight - static_cast<float>(y)) / windowHeight * m_worldHeight;
 		go->pos.Set(posX, posY, 0);
 		go->target = go->pos;
 		go->steps = 0;

@@ -86,14 +86,23 @@ void SceneTicTacToe::Update(double dt)
 	if (!bLButtonState && Application::IsMousePressed(0))
 	{
 		bLButtonState = true;
-		std::cout << "LBUTTON DOWN" << std::endl;
+
+		GameObject* go = FetchGO();
+		go->id = m_objectCount;
+		go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
+
 		double x, y;
 		Application::GetCursorPos(&x, &y);
 		int w = Application::GetWindowWidth();
 		int h = Application::GetWindowHeight();
+
 		float posX = static_cast<float>(x) / w * m_worldWidth;
 		float posY = (h - static_cast<float>(y)) / h * m_worldHeight;
+
+		go->pos.Set(posX, posY, 0);
+
 		//Exercise: Game inputs
+		std::cout << "LBUTTON DOWN" << std::endl;
 	}
 	else if (bLButtonState && !Application::IsMousePressed(0))
 	{
