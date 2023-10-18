@@ -99,6 +99,69 @@ void SceneTicTacToe::Update(double dt)
 		float posX = static_cast<float>(x) / w * m_worldWidth;
 		float posY = (h - static_cast<float>(y)) / h * m_worldHeight;
 
+		// Check which grid the player click is in and snap to it
+		// If mouse position is less than one grid 
+		if (posX <= m_gridSize)
+		{
+			// Check which box it is vertically
+			// if it is in the bottom box
+			if (posY <= m_gridSize)
+			{
+				posX = m_gridSize / 2;
+				posY = m_gridSize / 2;
+			}
+			else if (posY <= m_gridSize * 2)
+			{
+				posX = m_gridSize / 2;
+				posY = m_gridSize + (m_gridSize / 2);
+			}
+			else
+			{
+				posX = m_gridSize / 2;
+				posY = (m_gridSize * 2) + (m_gridSize / 2);
+			}
+		}
+		else if (posX <= m_gridSize * 2)
+		{
+			// Check which box it is vertically
+			// if it is in the bottom box
+			if (posY <= m_gridSize)
+			{
+				posX = m_gridSize + (m_gridSize / 2);
+				posY = m_gridSize / 2;
+			}
+			else if (posY <= m_gridSize * 2)
+			{
+				posX = m_gridSize + (m_gridSize / 2);
+				posY = m_gridSize + (m_gridSize / 2);
+			}
+			else
+			{
+				posX = m_gridSize + (m_gridSize / 2);
+				posY = (m_gridSize * 2) + (m_gridSize / 2);
+			}
+		}
+		else
+		{
+			// Check which box it is vertically
+			// if it is in the bottom box
+			if (posY <= m_gridSize)
+			{
+				posX = (m_gridSize * 2) + (m_gridSize / 2);
+				posY = m_gridSize / 2;
+			}
+			else if (posY <= m_gridSize * 2)
+			{
+				posX = (m_gridSize * 2) + (m_gridSize / 2);
+				posY = m_gridSize + (m_gridSize / 2);
+			}
+			else
+			{
+				posX = (m_gridSize * 2) + (m_gridSize / 2);
+				posY = (m_gridSize * 2) + (m_gridSize / 2);
+			}
+		}
+
 		go->pos.Set(posX, posY, 0);
 
 		//Exercise: Game inputs
