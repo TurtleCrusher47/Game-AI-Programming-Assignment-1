@@ -83,6 +83,21 @@ void SceneMovement::Update(double dt)
 	if(!bLButtonState && Application::IsMousePressed(0))
 	{
 		bLButtonState = true;
+
+		GameObject* go = FetchGO();
+		go->id = m_objectCount;
+		go->scale.Set(m_gridSize * 0.5f, m_gridSize * 0.5f, m_gridSize * 0.5f);
+
+		double x, y;
+		Application::GetCursorPos(&x, &y);
+		int w = Application::GetWindowWidth();
+		int h = Application::GetWindowHeight();
+
+		float posX = static_cast<float>(x) / w * m_worldWidth;
+		float posY = (h - static_cast<float>(y)) / h * m_worldHeight;
+		go->pos.Set(posX, posY, 0);
+		go->target = go->pos;
+		go->steps = 0;
 		std::cout << "LBUTTON DOWN" << std::endl;
 	}
 	else if(bLButtonState && !Application::IsMousePressed(0))
