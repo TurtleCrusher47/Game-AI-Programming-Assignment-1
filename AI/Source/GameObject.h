@@ -16,6 +16,20 @@ struct GameObject
 		GO_FISHFOOD,
 		GO_TOTAL, //must be last
 	};
+
+	enum STATE
+	{
+		STATE_NONE = 0,
+		STATE_TOOFULL,
+		STATE_FULL,
+		STATE_HUNGRY,
+		STATE_DEAD,
+	};
+	float energy;
+	float moveSpeed;
+	float countdown;
+	STATE currState;
+
 	GAMEOBJECT_TYPE type;
 	Vector3 pos;
 	Vector3 vel;

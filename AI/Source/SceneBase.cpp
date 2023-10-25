@@ -116,7 +116,8 @@ void SceneBase::Init()
 	meshList[GEO_CROSS]->textureID = LoadTGA("Image//cross.tga");
 	meshList[GEO_CIRCLE] = MeshBuilder::GenerateQuad("circle", Color(1, 1, 1));
 	meshList[GEO_CIRCLE]->textureID = LoadTGA("Image//circle.tga");
-	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
+	meshList[GEO_DEAD] = MeshBuilder::GenerateQuad("dead", Color(1, 1, 1));
+	meshList[GEO_DEAD]->textureID = LoadTGA("Image//dead.tga");
 
 	bLightEnabled = false;
 }

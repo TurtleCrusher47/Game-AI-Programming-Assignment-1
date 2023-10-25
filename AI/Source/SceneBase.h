@@ -51,6 +51,7 @@ public:
 		GEO_TICTACTOE,
 		GEO_CROSS,
 		GEO_CIRCLE,
+		GEO_DEAD,
 		NUM_GEOMETRY,
 	};
 public:
