@@ -163,6 +163,8 @@ void SceneTicTacToe::Update(double dt)
 		}
 
 		go->pos.Set(posX, posY, 0);
+		m_bCrossTurn = false;
+
 
 		//Exercise: Game inputs
 		std::cout << "LBUTTON DOWN" << std::endl;

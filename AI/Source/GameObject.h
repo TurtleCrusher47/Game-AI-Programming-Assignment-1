@@ -11,6 +11,9 @@ struct GameObject
 		GO_BALL,
 		GO_CROSS,
 		GO_CIRCLE,
+		GO_FISH,
+		GO_SHARK,
+		GO_FISHFOOD,
 		GO_TOTAL, //must be last
 	};
 	GAMEOBJECT_TYPE type;
