@@ -241,7 +241,6 @@ void SceneMovement::Update(double dt)
 		RenderMesh(meshList[GEO_FISHFOOD], false);
 		modelStack.PopMatrix();
 		break;
-
 	}
 }
 
