@@ -185,24 +185,63 @@ void SceneMovement::Update(double dt)
 			}
 		}
 	}
-}
-
-
-void SceneMovement::RenderGO(GameObject *go)
+} void SceneMovement::RenderGO(GameObject *go)
 {
+	std::ostringstream ss;
 	switch(go->type)
 	{
+	// Ball
 	case GameObject::GO_BALL:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 		RenderMesh(meshList[GEO_BALL], false);
 
-		std::ostringstream ss;
 		ss << go->id;
 		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
 		modelStack.PopMatrix();
 		break;
+
+	// Fish
+	case GameObject::GO_FISH:
+		modelStack.PushMatrix();
+		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		if (go->currState == GameObject::STATE_TOOFULL)
+			RenderMesh(meshList[GEO_TOOFULL], false);
+		else if (go->currState == GameObject::STATE_FULL)
+			RenderMesh(meshList[GEO_FULL], false);
+		else if (go->currState == GameObject::STATE_HUNGRY)
+			RenderMesh(meshList[GEO_HUNGRY], false);
+		else if (go->currState == GameObject::STATE_DEAD)
+			RenderMesh(meshList[GEO_DEAD], false);
+
+		ss.precision(3);
+		ss << go->energy;
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(0, -m_gridSize / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		modelStack.PopMatrix();
+		break;
+
+		// Shark
+		case GameObject::GO_SHARK:
+		modelStack.PushMatrix();
+		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_SHARK], false);
+		modelStack.PopMatrix();
+		break;
+
+		// Fish food
+		case GameObject::GO_FISHFOOD:
+		modelStack.PushMatrix();
+		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+		RenderMesh(meshList[GEO_FISHFOOD], false);
+		modelStack.PopMatrix();
+		break;
+
 	}
 }
 

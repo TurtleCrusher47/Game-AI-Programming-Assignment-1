@@ -32,6 +32,7 @@ protected:
 	float m_gridSize;
 	float m_gridOffset;
 	float m_hourOfTheDay;
+	float zOffset;
 };
 
 #endif
