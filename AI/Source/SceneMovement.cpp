@@ -133,16 +133,13 @@ void SceneMovement::Update(double dt)
 	}
 
 	//Movement Section
-
 	for(std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
 		if(go->active)
 		{
-			if (go->steps > 10)
-				continue;
 			Vector3 dir = go->target - go->pos;
-			if (dir.Length() < BALL_SPEED * dt * m_speed)
+			if (dir.Length() < go->moveSpeed * dt * m_speed)
 			{
 				//GO->pos reach target
 				go->pos = go->target;
@@ -173,7 +170,18 @@ void SceneMovement::Update(double dt)
 					{
 						go->target.y -= m_gridSize;
 					}
-				}
+				}	float random = Math::RandFloatMinMax(0.f, 1.f);
+				if (random < 0.25f && go->moveRight)
+					go->target = go->pos + Vector3(m_gridSize, 0, 0);
+				else if (random < 0.5f && go->moveLeft)
+					go->target = go->pos + Vector3(-m_gridSize, 0, 0);
+				else if (random < 0.75f && go->moveUp)
+					go->target = go->pos + Vector3(0, m_gridSize, 0);
+				else if(go->moveDown)
+					go->target = go->pos + Vector3(0, -m_gridSize, 0);
+				if (go->target.x < 0 || go->target.x > m_noGrid * m_gridSize || go->target.y < 0 || go->target.y > m_noGrid * m_gridSize)
+					go->target = go->pos;
+
 				//Exercise: change the conditions so that the game objects can move randomly
 
 				//Exercise: set some areas in the scene so that the game objects will go to different areas at various time of the day

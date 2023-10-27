@@ -39,6 +39,10 @@ struct GameObject
 	Vector3 target;
 	int id;
 	int steps;
+	bool moveLeft;
+	bool moveRight;
+	bool moveUp;
+	bool moveDown;
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_BALL);
 	~GameObject();
