@@ -52,6 +52,11 @@ public:
 		GEO_CROSS,
 		GEO_CIRCLE,
 		GEO_DEAD,
+		GEO_FISHFOOD,
+		GEO_FULL,
+		GEO_HUNGRY,
+		GEO_SHARK,
+		GEO_TOOFULL,
 		NUM_GEOMETRY,
 	};
 public:
