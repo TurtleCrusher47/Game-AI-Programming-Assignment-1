@@ -91,21 +91,6 @@ void SceneMovement::Update(double dt)
 	if(!bLButtonState && Application::IsMousePressed(0))
 	{
 		bLButtonState = true;
-
-		GameObject* go = FetchGO();
-		go->id = m_objectCount;
-		go->scale.Set(m_gridSize * 0.5f, m_gridSize * 0.5f, m_gridSize * 0.5f);
-
-		double x, y;
-		Application::GetCursorPos(&x, &y);
-		int windowWidth = Application::GetWindowWidth();
-		int windowHeight = Application::GetWindowHeight();
-
-		float posX = static_cast<float>(x) / windowWidth * m_worldWidth;
-		float posY = (windowHeight - static_cast<float>(y)) / windowHeight * m_worldHeight;
-		go->pos.Set(posX, posY, 0);
-		go->target = go->pos;
-		go->steps = 0;
 		std::cout << "LBUTTON DOWN" << std::endl;
 	}
 	else if(bLButtonState && !Application::IsMousePressed(0))
@@ -129,18 +114,114 @@ void SceneMovement::Update(double dt)
 	{
 		bSpaceState = true;
 		GameObject *go = FetchGO();
-		go->id = m_objectCount;
-		go->scale.Set(m_gridSize * 0.5f, m_gridSize * 0.5f, m_gridSize * 0.5f);
-		go->pos.Set(m_gridOffset + 0 * m_gridSize, m_gridOffset + 0 * m_gridSize, 0);
+		go->type = GameObject::GO_FISH;
+		go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
+		go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
 		go->target = go->pos;
 		go->steps = 0;
+		go->currState = GameObject::STATE_FULL;
+		go->energy = 8.f;
+		go->nearest = NULL;
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
 	{
 		bSpaceState = false;
 	}
+	static bool bVState = false;
+	if (!bVState && Application::IsKeyPressed('V'))
+	{
+		bVState = true;
+		GameObject *go = FetchGO();
+		go->type = GameObject::GO_FISHFOOD;
+		go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
+		go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
+		go->target = go->pos;
+		go->moveSpeed = 1.f;
+	}
+	else if (bVState && !Application::IsKeyPressed('V'))
+	{
+		bVState = false;
+	}
+
+	//StateMachine
+	static const float ENERGY_DROP_RATE = 0.2f;
+	static const float FULL_SPEED = 8.f;
+	static const float HUNGRY_SPEED = 4.f;
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (!go->active)
+			continue;
+		if(go->type == GameObject::GO_FISH)
+		{
+			switch (go->currState)
+			{
+			case GameObject::STATE_TOOFULL:
+				go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt) * m_speed;
+				go->moveSpeed = 0;
+				if (go->energy < 10.f)
+					go->currState = GameObject::STATE_FULL;
+				break;
+			case GameObject::STATE_FULL:
+				go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt) * m_speed;
+				go->moveSpeed = FULL_SPEED;
+				if (go->energy >= 10.f)
+					go->currState = GameObject::STATE_TOOFULL;
+				else if (go->energy < 5.f)
+					go->currState = GameObject::STATE_HUNGRY;
+				go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
+				if (go->nearest)
+				{
+					if (go->nearest->pos.x > go->pos.x)
+						go->moveRight = false;
+					else
+						go->moveLeft = false;
+					if (go->nearest->pos.y > go->pos.y)
+						go->moveUp = false;
+					else
+						go->moveDown = false;
+				}
+				break;
+			case GameObject::STATE_HUNGRY:
+				go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt) * m_speed;
+				go->moveSpeed = HUNGRY_SPEED;
+				if (go->energy >= 5.f)
+					go->currState = GameObject::STATE_FULL;
+				else if (go->energy < 0.f)
+				{
+					go->currState = GameObject::STATE_DEAD;
+					go->countDown = 3.f;
+				}
+				go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
+				if (go->nearest)
+				{
+					if (go->nearest->pos.x > go->pos.x)
+						go->moveLeft = false;
+					else
+						go->moveRight = false;
+					if (go->nearest->pos.y > go->pos.y)
+						go->moveDown = false;
+					else
+						go->moveUp = false;
+				}
+				break;
+			case GameObject::STATE_DEAD:
+				go->moveSpeed = 0;
+				go->countDown -= static_cast<float>(dt) * m_speed;
+				if (go->countDown < 0)
+				{
+					go->active = false;
+					--m_objectCount;
+				}
+				continue;
+				break;
+			}
+		}
+	}
 
 	//Movement Section
+	static const float SHARK_DIST = 10.f * m_gridSize;
+	static const float FOOD_DIST = 20.f * m_gridSize;
 	for(std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;

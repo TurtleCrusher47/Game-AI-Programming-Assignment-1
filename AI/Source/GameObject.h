@@ -27,7 +27,7 @@ struct GameObject
 	};
 	float energy;
 	float moveSpeed;
-	float countdown;
+	float countDown;
 	STATE currState;
 
 	GAMEOBJECT_TYPE type;
@@ -39,6 +39,7 @@ struct GameObject
 	Vector3 target;
 	int id;
 	int steps;
+	GameObject *nearest;
 	bool moveLeft;
 	bool moveRight;
 	bool moveUp;
