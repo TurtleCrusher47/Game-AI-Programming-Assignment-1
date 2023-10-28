@@ -219,9 +219,57 @@ void SceneMovement::Update(double dt)
 		}
 	}
 
-	//Movement Section
+	// "Collision"
+	//External triggers
 	static const float SHARK_DIST = 10.f * m_gridSize;
 	static const float FOOD_DIST = 20.f * m_gridSize;
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (!go->active)
+			continue;
+		if (go->type == GameObject::GO_FISH)
+		{
+			go->nearest = NULL;
+			float nearestDistance = FLT_MAX;
+			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			{
+				GameObject *go2 = (GameObject *)*it2;
+				if (!go2->active)
+					continue;
+				if (go2->type == GameObject::GO_SHARK)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < m_gridSize)
+					{
+						go->energy = -1;
+					}
+					else if (distance < SHARK_DIST && distance < nearestDistance && go->currState == GameObject::STATE_FULL)
+					{
+						nearestDistance = distance;
+						go->nearest = go2;
+					}
+				}
+				else if (go2->type == GameObject::GO_FISHFOOD)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < m_gridSize)
+					{
+						go->energy += 2.5f;
+						go2->active = false;
+						--m_objectCount;
+					}
+					else if (distance < FOOD_DIST && distance < nearestDistance && go->currState == GameObject::STATE_HUNGRY)
+					{
+						nearestDistance = distance;
+						go->nearest = go2;
+					}
+				}
+			}
+		}
+	}
+
+	//Movement Section
 	for(std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
@@ -258,7 +306,19 @@ void SceneMovement::Update(double dt)
 			}
 		}
 	}
-} void SceneMovement::RenderGO(GameObject *go)
+
+	//Counting objects
+	m_numGO[GameObject::GO_FISH] = m_numGO[GameObject::GO_SHARK] = m_numGO[GameObject::GO_FISHFOOD] = 0;
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (!go->active)
+			continue;
+		++m_numGO[go->type];
+	}
+}
+
+void SceneMovement::RenderGO(GameObject *go)
 {
 	std::ostringstream ss;
 	switch(go->type)
@@ -370,8 +430,15 @@ void SceneMovement::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 9);
 
 	ss.str("");
-	ss.precision(4);
-	ss << "Hour:" << m_hourOfTheDay;
+	ss << "Fishes:" << m_numGO[GameObject::GO_FISH];
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 18);
+
+	ss.str("");
+	ss << "Shark:" << m_numGO[GameObject::GO_SHARK];
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 15);
+
+	ss.str("");
+	ss << "Food:" << m_numGO[GameObject::GO_FISHFOOD];
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 12);
 	
 	RenderTextOnScreen(meshList[GEO_TEXT], "Movement", Color(0, 1, 0), 3, 50, 0);
