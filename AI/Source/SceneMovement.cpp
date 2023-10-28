@@ -31,6 +31,14 @@ void SceneMovement::Init()
 	m_hourOfTheDay = 0;
 
 	m_maxGridSize = m_gridSize * 20;
+
+	GameObject *go = FetchGO();
+	go->type = GameObject::GO_SHARK;
+	go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
+	go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
+	go->target = go->pos;
+	go->moveSpeed = 10.f;
+
 }
 
 // Makes a list of all the gameobjects and sets them active if they are not
@@ -145,32 +153,6 @@ void SceneMovement::Update(double dt)
 				go->pos = go->target;
 				float random = Math::RandFloatMinMax(0.f, 1.f);
 
-				//std::cout << m_maxGridSize << std::endl;
-				//std::cout << (go->target.x += m_gridSize) << std::endl;
-				//Exercise: use probability to decide go up or right
-				if (random >= 0.5f)
-				{
-					//Exercise: set boundaries so that game objects would not leave scene
-					if ((go->target.x + m_gridSize) < m_maxGridSize)
-					{
-						go->target.x += m_gridSize;
-					}
-					else
-					{
-						go->target.x -= m_gridSize;
-					}
-				}
-				else
-				{
-					if ((go->target.y + m_gridSize) < m_maxGridSize)
-					{
-						go->target.y += m_gridSize;
-					}
-					else
-					{
-						go->target.y -= m_gridSize;
-					}
-				}	float random = Math::RandFloatMinMax(0.f, 1.f);
 				if (random < 0.25f && go->moveRight)
 					go->target = go->pos + Vector3(m_gridSize, 0, 0);
 				else if (random < 0.5f && go->moveLeft)
@@ -181,15 +163,17 @@ void SceneMovement::Update(double dt)
 					go->target = go->pos + Vector3(0, -m_gridSize, 0);
 				if (go->target.x < 0 || go->target.x > m_noGrid * m_gridSize || go->target.y < 0 || go->target.y > m_noGrid * m_gridSize)
 					go->target = go->pos;
-
-				//Exercise: change the conditions so that the game objects can move randomly
-
-				//Exercise: set some areas in the scene so that the game objects will go to different areas at various time of the day
 			}
 			else
 			{
-				dir.Normalize();
-				go->pos += dir * BALL_SPEED * static_cast<float>(dt) * m_speed;
+				try
+				{
+					dir.Normalize();
+					go->pos += dir * go->moveSpeed * static_cast<float>(dt) * m_speed;
+				}
+				catch (DivideByZero)
+				{
+				}
 			}
 		}
 	}
