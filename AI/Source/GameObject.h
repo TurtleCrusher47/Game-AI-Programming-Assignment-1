@@ -2,6 +2,7 @@
 #define GAME_OBJECT_H
 
 #include "Vector3.h"
+#include "StateMachine.h"
 
 struct GameObject
 {
@@ -44,7 +45,7 @@ struct GameObject
 	bool moveRight;
 	bool moveUp;
 	bool moveDown;
-	// StateMachine *sm;
+	StateMachine *sm;
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_BALL);
 	~GameObject();
