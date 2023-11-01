@@ -44,9 +44,12 @@ struct GameObject
 	bool moveRight;
 	bool moveUp;
 	bool moveDown;
+	// StateMachine *sm;
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_BALL);
 	~GameObject();
+
+	void Update(double dt);
 };
 
 #endif
