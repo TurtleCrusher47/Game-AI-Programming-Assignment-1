@@ -2,6 +2,9 @@
 #include "GL\glew.h"
 #include "Application.h"
 #include <sstream>
+#include "StatesFish.h"
+#include "StatesShark.h"
+#include "SceneData.h"
 
 SceneMovement::SceneMovement()
 {
@@ -24,42 +27,51 @@ void SceneMovement::Init()
 	
 	Math::InitRNG();
 
-	m_objectCount = 0;
+	SceneData::GetInstance()->SetObjectCount(0);
+	SceneData::GetInstance()->SetFishCount(0);
 	m_noGrid = 20;
 	m_gridSize = m_worldHeight / m_noGrid;
 	m_gridOffset = m_gridSize / 2;
 	m_hourOfTheDay = 0;
 
-	m_maxGridSize = m_gridSize * 20;
-
-	GameObject *go = FetchGO();
-	go->type = GameObject::GO_SHARK;
+	GameObject *go = FetchGO(GameObject::GO_SHARK);
 	go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
 	go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
 	go->target = go->pos;
-	go->moveSpeed = 10.f;
-
 }
 
-// Makes a list of all the gameobjects and sets them active if they are not
-GameObject* SceneMovement::FetchGO()
+GameObject* SceneMovement::FetchGO(GameObject::GAMEOBJECT_TYPE type)
 {
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if (!go->active)
+		if (!go->active && go->type == type)
 		{
 			go->active = true;
-			++m_objectCount;
 			return go;
 		}
 	}
-	for (unsigned i = 0; i < 10; ++i)
+	for (unsigned i = 0; i < 5; ++i)
 	{
-		GameObject *go = new GameObject(GameObject::GO_BALL);
+		GameObject *go = new GameObject(type);
 		m_goList.push_back(go);
+		if (type == GameObject::GO_FISH)
+		{
+			go->sm = new StateMachine();
+			go->sm->AddState(new StateTooFull("TooFull", go));
+			go->sm->AddState(new StateFull("Full", go));
+			go->sm->AddState(new StateHungry("Hungry", go));
+			go->sm->AddState(new StateDead("Dead", go));
+		}
+		else if (type == GameObject::GO_SHARK)
+		{
+			go->sm = new StateMachine();
+			go->sm->AddState(new StateCrazy("Crazy", go));
+			go->sm->AddState(new StateNaughty("Naughty", go));
+			go->sm->AddState(new StateHappy("Happy", go));
+		}
 	}
-	return FetchGO();
+	return FetchGO(type);
 }
 
 void SceneMovement::Update(double dt)
@@ -113,15 +125,14 @@ void SceneMovement::Update(double dt)
 	if (!bSpaceState && Application::IsKeyPressed(VK_SPACE))
 	{
 		bSpaceState = true;
-		GameObject *go = FetchGO();
-		go->type = GameObject::GO_FISH;
+		GameObject *go = FetchGO(GameObject::GO_FISH);
 		go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
 		go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
 		go->target = go->pos;
 		go->steps = 0;
-		go->currState = GameObject::STATE_FULL;
 		go->energy = 8.f;
 		go->nearest = NULL;
+		go->sm->SetNextState("Full");
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
 	{
@@ -131,8 +142,7 @@ void SceneMovement::Update(double dt)
 	if (!bVState && Application::IsKeyPressed('V'))
 	{
 		bVState = true;
-		GameObject *go = FetchGO();
-		go->type = GameObject::GO_FISHFOOD;
+		GameObject *go = FetchGO(GameObject::GO_FISHFOOD);
 		go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
 		go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
 		go->target = go->pos;
@@ -142,10 +152,30 @@ void SceneMovement::Update(double dt)
 	{
 		bVState = false;
 	}
+	static bool bBState = false;
+	if (!bBState && Application::IsKeyPressed('B'))
+	{
+		bBState = true;
+		GameObject *go = FetchGO(GameObject::GO_SHARK);
+		go->scale.Set(m_gridSize, m_gridSize, m_gridSize);
+		go->pos.Set(m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, m_gridOffset + Math::RandIntMinMax(0, m_noGrid - 1) * m_gridSize, 0);
+		go->target = go->pos;
+	}
+	else if (bBState && !Application::IsKeyPressed('B'))
+	{
+		bBState = false;
+	}
 
+	//StateMachine
+	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (!go->active)
+			continue;
+		if (go->sm)
+			go->sm->Update(dt);
+	}
 
-
-	// "Collision"
 	//External triggers
 	static const float SHARK_DIST = 10.f * m_gridSize;
 	static const float FOOD_DIST = 20.f * m_gridSize;
@@ -156,7 +186,7 @@ void SceneMovement::Update(double dt)
 			continue;
 		if (go->type == GameObject::GO_FISH)
 		{
-			go->nearest = NULL;
+			//go->nearest = NULL;
 			float nearestDistance = FLT_MAX;
 			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
@@ -170,7 +200,7 @@ void SceneMovement::Update(double dt)
 					{
 						go->energy = -1;
 					}
-					else if (distance < SHARK_DIST && distance < nearestDistance && go->currState == GameObject::STATE_FULL)
+					else if (distance < SHARK_DIST && distance < nearestDistance && go->sm->GetCurrentState() == "Full")
 					{
 						nearestDistance = distance;
 						go->nearest = go2;
@@ -183,12 +213,43 @@ void SceneMovement::Update(double dt)
 					{
 						go->energy += 2.5f;
 						go2->active = false;
-						--m_objectCount;
 					}
-					else if (distance < FOOD_DIST && distance < nearestDistance && go->currState == GameObject::STATE_HUNGRY)
+					else if (distance < FOOD_DIST && distance < nearestDistance && go->sm->GetCurrentState() == "Hungry")
 					{
 						nearestDistance = distance;
 						go->nearest = go2;
+					}
+				}
+			}
+		}
+		else if (go->type == GameObject::GO_SHARK)
+		{
+			go->nearest = NULL;
+			float nearestDistance = FLT_MAX;
+			float highestEnergy = FLT_MIN;
+			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			{
+				GameObject *go2 = (GameObject *)*it2;
+				if (!go2->active)
+					continue;
+				if (go2->type == GameObject::GO_FISH)
+				{
+					if (go->sm->GetCurrentState() == "Naughty")
+					{
+						float distance = (go->pos - go2->pos).Length();
+						if (distance < nearestDistance && (go2->sm->GetCurrentState() == "TooFull" || go2->sm->GetCurrentState() == "Full"))
+						{
+							nearestDistance = distance;
+							go->nearest = go2;
+						}
+					}
+					if (go->sm->GetCurrentState() == "Crazy")
+					{
+						if (go2->energy > highestEnergy)
+						{
+							highestEnergy = go2->energy;
+							go->nearest = go2;
+						}
 					}
 				}
 			}
@@ -199,57 +260,62 @@ void SceneMovement::Update(double dt)
 	for(std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
-		if(go->active)
+		if (!go->active)
+			continue;
+		Vector3 dir = go->target - go->pos;
+		if (dir.Length() < go->moveSpeed * dt * m_speed)
 		{
-			Vector3 dir = go->target - go->pos;
-			if (dir.Length() < go->moveSpeed * dt * m_speed)
+			//GO->pos reach target
+			go->pos = go->target;
+			float random = Math::RandFloatMinMax(0.f, 1.f);
+			if (random < 0.25f && go->moveRight)
+				go->target = go->pos + Vector3(m_gridSize, 0, 0);
+			else if (random < 0.5f && go->moveLeft)
+				go->target = go->pos + Vector3(-m_gridSize, 0, 0);
+			else if (random < 0.75f && go->moveUp)
+				go->target = go->pos + Vector3(0, m_gridSize, 0);
+			else if(go->moveDown)
+				go->target = go->pos + Vector3(0, -m_gridSize, 0);
+			if (go->target.x < 0 || go->target.x > m_noGrid * m_gridSize || go->target.y < 0 || go->target.y > m_noGrid * m_gridSize)
+				go->target = go->pos;
+		}
+		else
+		{
+			try
 			{
-				//GO->pos reach target
-				go->pos = go->target;
-				float random = Math::RandFloatMinMax(0.f, 1.f);
-
-				if (random < 0.25f && go->moveRight)
-					go->target = go->pos + Vector3(m_gridSize, 0, 0);
-				else if (random < 0.5f && go->moveLeft)
-					go->target = go->pos + Vector3(-m_gridSize, 0, 0);
-				else if (random < 0.75f && go->moveUp)
-					go->target = go->pos + Vector3(0, m_gridSize, 0);
-				else if(go->moveDown)
-					go->target = go->pos + Vector3(0, -m_gridSize, 0);
-				if (go->target.x < 0 || go->target.x > m_noGrid * m_gridSize || go->target.y < 0 || go->target.y > m_noGrid * m_gridSize)
-					go->target = go->pos;
+				dir.Normalize();
+				go->pos += dir * go->moveSpeed * static_cast<float>(dt) * m_speed;
 			}
-			else
+			catch (DivideByZero)
 			{
-				try
-				{
-					dir.Normalize();
-					go->pos += dir * go->moveSpeed * static_cast<float>(dt) * m_speed;
-				}
-				catch (DivideByZero)
-				{
-				}
 			}
 		}
 	}
 
 	//Counting objects
+	int objectCount = 0;
+	int fishCount = 0;
 	m_numGO[GameObject::GO_FISH] = m_numGO[GameObject::GO_SHARK] = m_numGO[GameObject::GO_FISHFOOD] = 0;
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
 		if (!go->active)
 			continue;
+		++objectCount;
 		++m_numGO[go->type];
+		if (go->type == GameObject::GO_FISH)
+			++fishCount;
 	}
+	SceneData::GetInstance()->SetObjectCount(objectCount);
+	SceneData::GetInstance()->SetFishCount(fishCount);
 }
+
 
 void SceneMovement::RenderGO(GameObject *go)
 {
 	std::ostringstream ss;
 	switch(go->type)
 	{
-	// Ball
 	case GameObject::GO_BALL:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
@@ -260,20 +326,21 @@ void SceneMovement::RenderGO(GameObject *go)
 		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
 		modelStack.PopMatrix();
 		break;
-
-	// Fish
 	case GameObject::GO_FISH:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		if (go->currState == GameObject::STATE_TOOFULL)
-			RenderMesh(meshList[GEO_TOOFULL], false);
-		else if (go->currState == GameObject::STATE_FULL)
-			RenderMesh(meshList[GEO_FULL], false);
-		else if (go->currState == GameObject::STATE_HUNGRY)
-			RenderMesh(meshList[GEO_HUNGRY], false);
-		else if (go->currState == GameObject::STATE_DEAD)
-			RenderMesh(meshList[GEO_DEAD], false);
+		if (go->sm)
+		{
+			if (go->sm->GetCurrentState() == "TooFull")
+				RenderMesh(meshList[GEO_TOOFULL], false);
+			else if (go->sm->GetCurrentState() == "Full")
+				RenderMesh(meshList[GEO_FULL], false);
+			else if (go->sm->GetCurrentState() == "Hungry")
+				RenderMesh(meshList[GEO_HUNGRY], false);
+			else
+				RenderMesh(meshList[GEO_DEAD], false);
+		}
 
 		ss.precision(3);
 		ss << go->energy;
@@ -282,18 +349,23 @@ void SceneMovement::RenderGO(GameObject *go)
 		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
 		modelStack.PopMatrix();
 		break;
-
-		// Shark
-		case GameObject::GO_SHARK:
+	case GameObject::GO_SHARK:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_SHARK], false);
+
+		if (go->sm)
+		{
+			if (go->sm->GetCurrentState() == "Crazy")
+				RenderMesh(meshList[GEO_CRAZY], false);
+			else if (go->sm->GetCurrentState() == "Happy")
+				RenderMesh(meshList[GEO_HAPPY], false);
+			else
+				RenderMesh(meshList[GEO_SHARK], false);
+		}
 		modelStack.PopMatrix();
 		break;
-
-		// Fish food
-		case GameObject::GO_FISHFOOD:
+	case GameObject::GO_FISHFOOD:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
@@ -330,11 +402,13 @@ void SceneMovement::Render()
 	RenderMesh(meshList[GEO_BG], false);
 	modelStack.PopMatrix();
 
+	zOffset = 0;
 	for(std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
 		if(go->active)
 		{
+			zOffset += 0.001f;
 			RenderGO(go);
 		}
 	}
@@ -352,7 +426,7 @@ void SceneMovement::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 3);
 
 	ss.str("");
-	ss << "Count:" << m_objectCount;
+	ss << "Count:" << SceneData::GetInstance()->GetObjectCount();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 9);
 
 	ss.str("");
@@ -367,7 +441,7 @@ void SceneMovement::Render()
 	ss << "Food:" << m_numGO[GameObject::GO_FISHFOOD];
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 12);
 	
-	RenderTextOnScreen(meshList[GEO_TEXT], "Movement", Color(0, 1, 0), 3, 50, 0);
+	RenderTextOnScreen(meshList[GEO_TEXT], "Aquarium", Color(0, 1, 0), 3, 50, 0);
 }
 
 void SceneMovement::Exit()

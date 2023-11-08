@@ -25,7 +25,6 @@ protected:
 	float m_speed;
 	float m_worldWidth;
 	float m_worldHeight;
-	float m_maxGridSize;
 	GameObject *m_ghost;
 	int m_objectCount;
 	int m_noGrid;
