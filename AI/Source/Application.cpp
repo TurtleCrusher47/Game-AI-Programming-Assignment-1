@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "SceneMovement.h"
 #include "SceneQueen.h"
 #include "SceneKnight.h"
 
@@ -124,7 +125,7 @@ void Application::Init()
 void Application::Run()
 {
 	//Main Loop
-	m_scene = new SceneKnight();
+	m_scene = new SceneMovement();
 	//m_scene = new SceneQueen();
 	m_scene->Init();
 
