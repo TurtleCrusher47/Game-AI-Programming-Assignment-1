@@ -6,38 +6,35 @@
 
 class StateCrazy : public State
 {
-	GameObject *m_go;
 public:
-	StateCrazy(const std::string &stateID, GameObject *go);
+	StateCrazy(const std::string &stateID);
 	virtual ~StateCrazy();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 class StateNaughty : public State
 {
-	GameObject *m_go;
 public:
-	StateNaughty(const std::string &stateID, GameObject *go);
+	StateNaughty(const std::string &stateID);
 	virtual ~StateNaughty();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 class StateHappy : public State
 {
-	GameObject *m_go;
 public:
-	StateHappy(const std::string &stateID, GameObject *go);
+	StateHappy(const std::string &stateID);
 	virtual ~StateHappy();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 #endif

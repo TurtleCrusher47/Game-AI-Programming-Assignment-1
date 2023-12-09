@@ -1,4 +1,3 @@
-
 #include "Application.h"
 
 //Include GLEW
@@ -11,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "SceneMovement.h"
-#include "SceneTicTacToe.h"
+#include "SceneQueen.h"
+#include "SceneKnight.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -63,6 +62,7 @@ int Application::GetWindowHeight()
 }
 
 Application::Application()
+	: m_scene{}, m_timer{}
 {
 }
 
@@ -92,7 +92,7 @@ void Application::Init()
 	//Create a window and create its OpenGL context
 	m_width = 1000;
 	m_height = 600;
-	m_window = glfwCreateWindow(m_width, m_height, "Physics", NULL, NULL);
+	m_window = glfwCreateWindow(m_width, m_height, "AI for Games", NULL, NULL);
 
 	//If the window couldn't be created
 	if (!m_window)
@@ -124,14 +124,15 @@ void Application::Init()
 void Application::Run()
 {
 	//Main Loop
-	Scene *scene = new SceneMovement();
-	scene->Init();
+	m_scene = new SceneKnight();
+	//m_scene = new SceneQueen();
+	m_scene->Init();
 
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
-		scene->Update(m_timer.getElapsedTime());
-		scene->Render();
+		m_scene->Update(m_timer.getElapsedTime());
+		m_scene->Render();
 		//Swap buffers
 		glfwSwapBuffers(m_window);
 		//Get and organize events, like keyboard and mouse input, window resizing, etc...
@@ -139,8 +140,8 @@ void Application::Run()
         m_timer.waitUntil(frameTime);       // Frame rate limiter. Limits each frame to a specified time in ms.   
 
 	} //Check if the ESC key had been pressed or if the window had been closed
-	scene->Exit();
-	delete scene;
+	m_scene->Exit();
+	delete m_scene;
 }
 
 void Application::Exit()
@@ -149,4 +150,12 @@ void Application::Exit()
 	glfwDestroyWindow(m_window);
 	//Finalize and clean up GLFW
 	glfwTerminate();
+}
+
+void Application::Iterate()
+{
+	m_scene->Update(0);
+	m_scene->Render();
+	glfwSwapBuffers(m_window);
+	glfwPollEvents();
 }

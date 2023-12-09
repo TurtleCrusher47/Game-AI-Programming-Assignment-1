@@ -47,6 +47,7 @@ public:
 		GEO_TEXT,
 		GEO_BALL,
 		GEO_CUBE,
+		GEO_LINE,
 		GEO_BG,
 		GEO_TICTACTOE,
 		GEO_CROSS,
@@ -62,7 +63,10 @@ public:
 		GEO_FISHFOOD,
 		GEO_CRAZY,
 		GEO_HAPPY,
-		NUM_GEOMETRY,	
+		GEO_CHESSBOARD,
+		GEO_QUEEN,
+		GEO_KNIGHT,
+		NUM_GEOMETRY,
 	};
 public:
 	SceneBase();

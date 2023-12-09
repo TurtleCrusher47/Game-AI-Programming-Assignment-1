@@ -5,18 +5,17 @@
 #include <map>
 #include "State.h"
 
+struct GameObject;
 class StateMachine
 {
 	std::map<std::string, State*> m_stateMap;
-	State *m_currState;
-	State *m_nextState;
 public:
 	StateMachine();
 	~StateMachine();
 	void AddState(State *newState);
-	void SetNextState(const std::string &nextStateID);
-	const std::string& GetCurrentState();
-	void Update(double dt);
+	void SetNextState(const std::string &nextStateID, GameObject* go);
+	const std::string& GetCurrentState(GameObject* go);
+	void Update(double dt, GameObject* go);
 };
 
 #endif

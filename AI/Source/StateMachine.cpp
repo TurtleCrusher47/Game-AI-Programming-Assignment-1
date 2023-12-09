@@ -1,8 +1,7 @@
 #include "StateMachine.h"
+#include "GameObject.h"
 
 StateMachine::StateMachine()
-	: m_currState(NULL),
-	m_nextState(NULL)
 {
 }
 
@@ -21,34 +20,36 @@ void StateMachine::AddState(State *newState)
 		return;
 	if (m_stateMap.find(newState->GetStateID()) != m_stateMap.end())
 		return;
-	if (!m_currState)
-		m_currState = m_nextState = newState;
 	m_stateMap.insert(std::pair<std::string, State*>(newState->GetStateID(), newState));
 }
 
-void StateMachine::SetNextState(const std::string &nextStateID)
+void StateMachine::SetNextState(const std::string &nextStateID, GameObject* go)
 {
 	std::map<std::string, State*>::iterator it = m_stateMap.find(nextStateID);
 	if (it != m_stateMap.end())
 	{
-		m_nextState = (State *)it->second;
+		go->nextState = (State *)it->second;
 	}
 }
 
-const std::string & StateMachine::GetCurrentState()
+const std::string & StateMachine::GetCurrentState(GameObject* go)
 {
-	if (m_currState)
-		return m_currState->GetStateID();
-	return "<No states>";
+	static std::string errorMsg{ "<No states>" };
+	if (go->currState)
+		return go->currState->GetStateID();
+	return errorMsg;
 }
 
-void StateMachine::Update(double dt)
+void StateMachine::Update(double dt, GameObject* go)
 {
-	if (m_nextState != m_currState)
+	if (go->nextState != go->currState)
 	{
-		m_currState->Exit();
-		m_currState = m_nextState;
-		m_currState->Enter();
+		if (go->currState != nullptr)
+			go->currState->Exit(go);
+		go->currState = go->nextState;
+		go->currState->Enter(go);
 	}
-	m_currState->Update(dt);
+
+	if (go->currState != nullptr)
+		go->currState->Update(dt, go);
 }

@@ -103,10 +103,10 @@ void SceneBase::Init()
 	{
 		meshList[i] = NULL;
 	}
-
-meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
+	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 	meshList[GEO_BALL] = MeshBuilder::GenerateSphere("ball", Color(1, 0, 0), 10, 10, 1.f);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(1, 1, 1), 2.f);
+	meshList[GEO_LINE] = MeshBuilder::GenerateLine("line", 1.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 	meshList[GEO_BG] = MeshBuilder::GenerateQuad("bg", Color(1, 1, 1));
@@ -131,7 +131,15 @@ meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
 	meshList[GEO_CRAZY]->textureID = LoadTGA("Image//crazy.tga");
 	meshList[GEO_HAPPY] = MeshBuilder::GenerateQuad("happy", Color(1, 1, 1));
 	meshList[GEO_HAPPY]->textureID = LoadTGA("Image//happy.tga");
-	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);	
+	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
+
+	//week 6 - make chessboard mesh/texture pair
+	meshList[GEO_CHESSBOARD] = MeshBuilder::GenerateQuad("chessboard", Color(1, 1, 1));
+	meshList[GEO_CHESSBOARD]->textureID = LoadTGA("Image//chessboard.tga");
+	meshList[GEO_QUEEN] = MeshBuilder::GenerateQuad("queen", Color(1, 1, 1));
+	meshList[GEO_QUEEN]->textureID = LoadTGA("Image//queen.tga");
+	meshList[GEO_KNIGHT] = MeshBuilder::GenerateQuad("knight", Color(1, 1, 1));
+	meshList[GEO_KNIGHT]->textureID = LoadTGA("Image//knight.tga");
 
 	bLightEnabled = false;
 }

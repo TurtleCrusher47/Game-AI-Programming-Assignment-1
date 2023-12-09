@@ -6,50 +6,46 @@
 
 class StateTooFull : public State
 {
-	GameObject *m_go;
 public:
-	StateTooFull(const std::string &stateID, GameObject *go);
+	StateTooFull(const std::string &stateID);
 	virtual ~StateTooFull();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 class StateFull : public State
 {
-	GameObject *m_go;
 public:
-	StateFull(const std::string &stateID, GameObject *go);
+	StateFull(const std::string &stateID);
 	virtual ~StateFull();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 class StateHungry : public State
 {
-	GameObject *m_go;
 public:
-	StateHungry(const std::string &stateID, GameObject *go);
+	StateHungry(const std::string &stateID);
 	virtual ~StateHungry();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 class StateDead : public State
 {
-	GameObject *m_go;
 public:
-	StateDead(const std::string &stateID, GameObject *go);
+	StateDead(const std::string &stateID);
 	virtual ~StateDead();
 
-	virtual void Enter();
-	virtual void Update(double dt);
-	virtual void Exit();
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
 };
 
 #endif

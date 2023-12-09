@@ -4,6 +4,7 @@
 
 #include "timer.h"
 
+class Scene;
 class Application
 {
 public:
@@ -21,12 +22,15 @@ public:
 	static int GetWindowWidth();
 	static int GetWindowHeight();
 
+	void Iterate();
+
 private:
 	Application();
 	~Application();
 
 	//Declare a window object
 	StopWatch m_timer;
+	Scene* m_scene;
 };
 
 #endif

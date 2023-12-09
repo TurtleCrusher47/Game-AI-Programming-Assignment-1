@@ -1,17 +1,17 @@
-#include "SceneTicTacToe.h"
+#include "SceneMaze.h"
 #include "GL\glew.h"
 #include "Application.h"
 #include <sstream>
 
-SceneTicTacToe::SceneTicTacToe()
+SceneMaze::SceneMaze()
 {
 }
 
-SceneTicTacToe::~SceneTicTacToe()
+SceneMaze::~SceneMaze()
 {
 }
 
-void SceneTicTacToe::Init()
+void SceneMaze::Init()
 {
 	SceneBase::Init();
 
@@ -23,18 +23,14 @@ void SceneTicTacToe::Init()
 	m_speed = 1.f;
 
 	Math::InitRNG();
-
-	m_objectCount = 0;
-	m_noGrid = 3;
+	
+	m_noGrid = 12;
 	m_gridSize = m_worldHeight / m_noGrid;
 	m_gridOffset = m_gridSize / 2;
 
-	m_bCrossTurn = true;
-	m_bGameOver = false;
-	m_winner = WHO_CONTENT::WHO_NONE;
 }
 
-GameObject* SceneTicTacToe::FetchGO()
+GameObject* SceneMaze::FetchGO()
 {
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
 	{
@@ -54,13 +50,7 @@ GameObject* SceneTicTacToe::FetchGO()
 	return FetchGO();
 }
 
-//Exercise: This function should return 0 to 8, i.e. AI player's decision to put circle on one of the grids
-int SceneTicTacToe::GetAIDecision()
-{
-	return 0;
-}
-
-void SceneTicTacToe::Update(double dt)
+void SceneMaze::Update(double dt)
 {
 	SceneBase::Update(dt);
 
@@ -93,7 +83,8 @@ void SceneTicTacToe::Update(double dt)
 		int h = Application::GetWindowHeight();
 		float posX = static_cast<float>(x) / w * m_worldWidth;
 		float posY = (h - static_cast<float>(y)) / h * m_worldHeight;
-		//Exercise: Game inputs
+		
+		//Exercise: turn mouse click into end point and run BFS
 	}
 	else if (bLButtonState && !Application::IsMousePressed(0))
 	{
@@ -120,39 +111,19 @@ void SceneTicTacToe::Update(double dt)
 	{
 		bSpaceState = false;
 	}
-
-	if (!m_bCrossTurn)
-	{
-		//Exercise: Call GetAIDecision() and put circle on grid
-	}
-
-	//Game Logic Section
-	//Exercise: Check draw, cross wins or circle wins
 }
 
 
-void SceneTicTacToe::RenderGO(GameObject *go)
+void SceneMaze::RenderGO(GameObject *go)
 {
 	switch (go->type)
 	{
-	case GameObject::GO_CROSS:
-		modelStack.PushMatrix();
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CROSS], false);
-		modelStack.PopMatrix();
-		break;
-	case GameObject::GO_CIRCLE:
-		modelStack.PushMatrix();
-		modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-		RenderMesh(meshList[GEO_CIRCLE], false);
-		modelStack.PopMatrix();
+	case GameObject::GO_NONE:
 		break;
 	}
 }
 
-void SceneTicTacToe::Render()
+void SceneMaze::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -176,21 +147,14 @@ void SceneTicTacToe::Render()
 	modelStack.PushMatrix();
 	modelStack.Translate(m_worldHeight * 0.5f, m_worldHeight * 0.5f, -1.f);
 	modelStack.Scale(m_worldHeight, m_worldHeight, m_worldHeight);
-	RenderMesh(meshList[GEO_TICTACTOE], false);
+	RenderMesh(meshList[GEO_WHITEQUAD], false);
 	modelStack.PopMatrix();
 
-	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
-	{
-		GameObject *go = (GameObject *)*it;
-		if (go->active)
-		{
-			RenderGO(go);
-		}
-	}
+	//Render tiles 
+	//Render curr point
+	//Render shortest path
 
 	//On screen text
-	static std::string winnerText[] = {"Draw", "Cross wins", "Circle wins"};
-
 	std::ostringstream ss;
 	ss.precision(3);
 	ss << "Speed:" << m_speed;
@@ -202,24 +166,15 @@ void SceneTicTacToe::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 3);
 
 	ss.str("");
-	ss << "Count:" << m_objectCount;
+	ss << "Num Move:" << 0;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 9);
 
 	ss.str("");
-	ss << "Turn:" << (m_bCrossTurn ? "Cross" : "Circle");
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 12);
-
-	if (m_bGameOver)
-	{
-		ss.str("");
-		ss << winnerText[static_cast<int>(m_winner)];
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 15);
-	}
-
-	RenderTextOnScreen(meshList[GEO_TEXT], "Tic Tac Toe (R to reset)", Color(0, 1, 0), 3, 50, 0);
+	ss << "Maze " << 0;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 0);
 }
 
-void SceneTicTacToe::Exit()
+void SceneMaze::Exit()
 {
 	SceneBase::Exit();
 	//Cleanup GameObjects
@@ -228,10 +183,5 @@ void SceneTicTacToe::Exit()
 		GameObject *go = m_goList.back();
 		delete go;
 		m_goList.pop_back();
-	}
-	if (m_ghost)
-	{
-		delete m_ghost;
-		m_ghost = NULL;
 	}
 }

@@ -1,12 +1,15 @@
 #include "StatesFish.h"
+#include "PostOffice.h"
+#include "ConcreteMessages.h"
+#include "SceneData.h"
 
+static const float MESSAGE_INTERVAL = 1.f;
 static const float ENERGY_DROP_RATE = 0.2f;
 static const float FULL_SPEED = 8.f;
 static const float HUNGRY_SPEED = 4.f;
 
-StateTooFull::StateTooFull(const std::string & stateID, GameObject * go)
-	: State(stateID),
-	m_go(go)
+StateTooFull::StateTooFull(const std::string & stateID)
+	: State(stateID)
 {
 }
 
@@ -14,25 +17,24 @@ StateTooFull::~StateTooFull()
 {
 }
 
-void StateTooFull::Enter()
+void StateTooFull::Enter(GameObject* go)
 {
-	m_go->moveSpeed = 0;
+	go->moveSpeed = 0;
 }
 
-void StateTooFull::Update(double dt)
+void StateTooFull::Update(double dt, GameObject* go)
 {
-	m_go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
-	if (m_go->energy < 10.f)
-		m_go->sm->SetNextState("Full");
+	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
+	if (go->energy < 10.f)
+		go->sm->SetNextState("Full", go);
 }
 
-void StateTooFull::Exit()
+void StateTooFull::Exit(GameObject* go)
 {
 }
 
-StateFull::StateFull(const std::string & stateID, GameObject * go)
-	: State(stateID),
-	m_go(go)
+StateFull::StateFull(const std::string & stateID)
+	: State(stateID)
 {
 }
 
@@ -40,40 +42,66 @@ StateFull::~StateFull()
 {
 }
 
-void StateFull::Enter()
+void StateFull::Enter(GameObject* go)
 {
-	m_go->moveSpeed = FULL_SPEED;
-	m_go->nearest = NULL;
+	go->moveSpeed = FULL_SPEED;
+	go->nearest = NULL;
+	go->countDown = 0;
 }
 
-void StateFull::Update(double dt)
+void StateFull::Update(double dt, GameObject* go)
 {
-	m_go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
-	if (m_go->energy >= 10.f)
-		m_go->sm->SetNextState("TooFull");
-	else if (m_go->energy < 5.f)
-		m_go->sm->SetNextState("Hungry");
-	m_go->moveLeft = m_go->moveRight = m_go->moveUp = m_go->moveDown = true;
-	if (m_go->nearest)
+	go->countDown += static_cast<float>(dt);
+
+	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
+	if (go->energy >= 10.f)
+		go->sm->SetNextState("TooFull", go);
+	else if (go->energy < 5.f)
+		go->sm->SetNextState("Hungry", go);
+	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
+
+	//once nearest is set, fish will continue to move away from shark even
+	//when they have move significantly far away (until it changes state).
+	if (go->nearest)
 	{
-		if (m_go->nearest->pos.x > m_go->pos.x)
-			m_go->moveRight = false;
+		if (go->nearest->pos.x > go->pos.x)
+			go->moveRight = false;
 		else
-			m_go->moveLeft = false;
-		if (m_go->nearest->pos.y > m_go->pos.y)
-			m_go->moveUp = false;
+			go->moveLeft = false;
+		if (go->nearest->pos.y > go->pos.y)
+			go->moveUp = false;
 		else
-			m_go->moveDown = false;
+			go->moveDown = false;
+
+		//if shark is far enough, reset nearest to null
+		const float SHARK_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
+		if ((go->pos - go->nearest->pos).Length() > SHARK_DIST)
+			go->nearest = nullptr;
+	}
+	else //go->nearest is nullptr
+	{
+		if (go->countDown >= MESSAGE_INTERVAL) //ensure at least 1 second interval between messages
+		{
+			go->countDown -= MESSAGE_INTERVAL;
+
+			//week 4
+			//send message to Scene requesting for nearest to be updated
+			//message is allocated on the heap (WARNING: expensive. 
+			//either refactor PostOffice to not assume heap-allocated messages,
+			//or pool messages to avoid real-time heap allocation)
+			const float SHARK_DIST = 6.f * SceneData::GetInstance()->GetGridSize();
+			PostOffice::GetInstance()->Send("Scene", 
+				new MessageWRU(go, MessageWRU::NEAREST_SHARK, SHARK_DIST));
+		}
 	}
 }
 
-void StateFull::Exit()
+void StateFull::Exit(GameObject* go)
 {
 }
 
-StateHungry::StateHungry(const std::string & stateID, GameObject * go)
-	: State(stateID),
-	m_go(go)
+StateHungry::StateHungry(const std::string & stateID)
+	: State(stateID)
 {
 }
 
@@ -81,42 +109,62 @@ StateHungry::~StateHungry()
 {
 }
 
-void StateHungry::Enter()
+void StateHungry::Enter(GameObject* go)
 {
-	m_go->moveSpeed = HUNGRY_SPEED;
-	m_go->nearest = NULL;
+	go->moveSpeed = HUNGRY_SPEED;
+	go->nearest = NULL;
+	go->countDown = MESSAGE_INTERVAL;
+
+	//week 5
+	int range[] = { 3, 6 };
+	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_FISHFOOD, 2, range));
 }
 
-void StateHungry::Update(double dt)
+void StateHungry::Update(double dt, GameObject* go)
 {
-	m_go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
-	if (m_go->energy >= 5.f)
-		m_go->sm->SetNextState("Full");
-	else if (m_go->energy < 0.f)
+	go->countDown += static_cast<float>(dt); //check against this value before sending message(so we don't send the message every frame)
+
+	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
+	if (go->energy >= 5.f)
+		go->sm->SetNextState("Full", go);
+	else if (go->energy < 0.f)
 	{
-		m_go->sm->SetNextState("Dead");
+		go->sm->SetNextState("Dead", go);
 	}
-	m_go->moveLeft = m_go->moveRight = m_go->moveUp = m_go->moveDown = true;
-	if (m_go->nearest)
+	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
+	if (go->nearest)
 	{
-		if (m_go->nearest->pos.x > m_go->pos.x)
-			m_go->moveLeft = false;
+		if (go->nearest->pos.x > go->pos.x)
+			go->moveLeft = false;
 		else
-			m_go->moveRight = false;
-		if (m_go->nearest->pos.y > m_go->pos.y)
-			m_go->moveDown = false;
+			go->moveRight = false;
+		if (go->nearest->pos.y > go->pos.y)
+			go->moveDown = false;
 		else
-			m_go->moveUp = false;
+			go->moveUp = false;
+	}
+	else //go->nearest is nullptr
+	{
+		if (go->countDown >= MESSAGE_INTERVAL) //ensure at least 1 second interval between messages
+		{
+			go->countDown -= MESSAGE_INTERVAL;
+			//week 4
+			//send message to Scene requesting for nearest to be updated
+			//message is allocated on the heap (WARNING: expensive. 
+			//either refactor PostOffice to not assume heap-allocated messages,
+			//or pool messages to avoid real-time heap allocation)
+			const float FOOD_DIST = 20.f * SceneData::GetInstance()->GetGridSize();
+			PostOffice::GetInstance()->Send("Scene", new MessageWRU(go, MessageWRU::NEAREST_FISHFOOD, FOOD_DIST));
+		}
 	}
 }
 
-void StateHungry::Exit()
+void StateHungry::Exit(GameObject* go)
 {
 }
 
-StateDead::StateDead(const std::string & stateID, GameObject * go)
-	: State(stateID),
-	m_go(go)
+StateDead::StateDead(const std::string & stateID)
+	: State(stateID)
 {
 }
 
@@ -124,21 +172,21 @@ StateDead::~StateDead()
 {
 }
 
-void StateDead::Enter()
+void StateDead::Enter(GameObject* go)
 {
-	m_go->countDown = 3.f;
-	m_go->moveSpeed = 0;
+	go->countDown = 3.f;
+	go->moveSpeed = 0;
 }
 
-void StateDead::Update(double dt)
+void StateDead::Update(double dt, GameObject* go)
 {
-	m_go->countDown -= static_cast<float>(dt);
-	if (m_go->countDown < 0)
+	go->countDown -= static_cast<float>(dt);
+	if (go->countDown < 0)
 	{
-		m_go->active = false;
+		go->active = false;
 	}
 }
 
-void StateDead::Exit()
+void StateDead::Exit(GameObject* go)
 {
 }

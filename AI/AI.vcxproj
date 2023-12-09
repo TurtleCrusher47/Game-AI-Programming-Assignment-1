@@ -137,15 +137,25 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshBuilder.cpp" />
+    <ClCompile Include="Source\PostOffice.cpp" />
     <ClCompile Include="Source\SceneBase.cpp" />
+    <ClCompile Include="Source\SceneData.cpp" />
+    <ClCompile Include="Source\SceneKnight.cpp" />
     <ClCompile Include="Source\SceneMovement.cpp" />
+    <ClCompile Include="Source\SceneQueen.cpp" />
     <ClCompile Include="Source\SceneTicTacToe.cpp" />
     <ClCompile Include="Source\shader.cpp" />
+    <ClCompile Include="Source\State.cpp" />
+    <ClCompile Include="Source\StateMachine.cpp" />
+    <ClCompile Include="Source\StatesFish.cpp" />
+    <ClCompile Include="Source\StatesFishFood.cpp" />
+    <ClCompile Include="Source\StatesShark.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\ConcreteMessages.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\Geometry.h" />
     <ClInclude Include="Source\Light.h" />
@@ -154,11 +164,22 @@
     <ClInclude Include="Source\Material.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\MeshBuilder.h" />
+    <ClInclude Include="Source\Message.h" />
+    <ClInclude Include="Source\ObjectBase.h" />
+    <ClInclude Include="Source\PostOffice.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneBase.h" />
+    <ClInclude Include="Source\SceneData.h" />
+    <ClInclude Include="Source\SceneKnight.h" />
     <ClInclude Include="Source\SceneMovement.h" />
+    <ClInclude Include="Source\SceneQueen.h" />
     <ClInclude Include="Source\SceneTicTacToe.h" />
     <ClInclude Include="Source\shader.hpp" />
+    <ClInclude Include="Source\State.h" />
+    <ClInclude Include="Source\StateMachine.h" />
+    <ClInclude Include="Source\StatesFish.h" />
+    <ClInclude Include="Source\StatesFishFood.h" />
+    <ClInclude Include="Source\StatesShark.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
   </ItemGroup>
