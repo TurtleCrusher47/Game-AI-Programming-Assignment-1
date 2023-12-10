@@ -344,13 +344,13 @@ void SceneA1::RenderGO(GameObject *go)
 		if (go->sm)
 		{
 			if (go->sm->GetCurrentState(go) == "TooFull")
-				RenderMesh(meshList[GEO_TOOFULL], false);
+				RenderMesh(meshList[GEO_BEE], false);
 			else if (go->sm->GetCurrentState(go) == "Full")
-				RenderMesh(meshList[GEO_FULL], false);
+				RenderMesh(meshList[GEO_BEE], false);
 			else if (go->sm->GetCurrentState(go) == "Hungry")
-				RenderMesh(meshList[GEO_HUNGRY], false);
+				RenderMesh(meshList[GEO_BEE], false);
 			else
-				RenderMesh(meshList[GEO_DEAD], false);
+				RenderMesh(meshList[GEO_BEE], false);
 		}
 
 		modelStack.PushMatrix();
