@@ -128,7 +128,6 @@ void Application::Run()
 	m_scene = new SceneMovement();
 	//m_scene = new SceneQueen();
 	m_scene->Init();
-
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
 	{
