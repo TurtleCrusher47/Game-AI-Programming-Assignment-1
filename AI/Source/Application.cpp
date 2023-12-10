@@ -10,7 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "SceneMovement.h"
+#include "SceneA1.h"
+#include "SceneMovement.h"
 #include "SceneQueen.h"
 #include "SceneKnight.h"
 
@@ -125,7 +126,7 @@ void Application::Init()
 void Application::Run()
 {
 	//Main Loop
-	m_scene = new SceneMovement();
+	m_scene = new SceneA1();
 	//m_scene = new SceneQueen();
 	m_scene->Init();
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
