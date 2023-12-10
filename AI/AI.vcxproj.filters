@@ -77,6 +77,9 @@
     <ClCompile Include="Source\SceneKnight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SceneA1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\SceneA1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -169,7 +172,7 @@
     <ClInclude Include="Source\SceneKnight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SceneA1.h">
+    <ClInclude Include="SceneA1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
