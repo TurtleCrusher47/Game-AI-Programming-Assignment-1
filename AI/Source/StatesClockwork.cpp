@@ -22,15 +22,19 @@ void StateClockworkWander::Enter(GameObject* go)
 {
 	go->moveSpeed = WANDER_SPEED;
 	go->nearest = NULL;
+	go->countDown = 0;
 }
 
 // Wander around until an enemy comes within range, then change to chase state and chase that enemy
 void StateClockworkWander::Update(double dt, GameObject* go)
 {
+	go->countDown += static_cast<float>(dt);
+
 	if (go->nearest)
 	{
 		go->sm->SetNextState("StateClockworkChase", go);
 		std::cout << "chase" << std::endl;
+		std::cout << go->nearest << std::endl;
 	}
 	else
 	{
@@ -38,7 +42,10 @@ void StateClockworkWander::Update(double dt, GameObject* go)
 		{
 			go->countDown -= MESSAGE_INTERVAL;
 
-			const float ENEMY_DIST = 1000.f * SceneData::GetInstance()->GetGridSize();
+
+			std::cout << "Check" << std::endl;
+
+			const float ENEMY_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
 				PostOffice::GetInstance()->Send("Scene", 
 					new MessageWRU(go, MessageWRU::NEAREST_DAMAGEABLE, ENEMY_DIST));
 		}

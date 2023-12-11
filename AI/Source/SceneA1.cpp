@@ -632,13 +632,16 @@ void SceneA1::ProcessMessages()
 				// Message to look for nearest damageable enemy
 				if (messageWRU->type == MessageWRU::NEAREST_DAMAGEABLE &&
 					go2->type != GameObject::GO_BEEHIVE &&
-					go2->type != GameObject::GO_NIGHTMARE)
+					go2->type != GameObject::GO_NIGHTMARE &&
+					go2->type != go->type)
 				{
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < messageWRU->threshold && distance < nearestDistance)
 					{
 						nearestDistance = distance;
 						go->nearest = go2;
+
+						std::cout << go->nearest->type << std::endl;
 					}
 				}
 
