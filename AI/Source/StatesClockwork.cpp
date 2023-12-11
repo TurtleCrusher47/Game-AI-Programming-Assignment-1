@@ -121,49 +121,29 @@ StateClockworkDead::~StateClockworkDead()
 void StateClockworkDead::Enter(GameObject* go)
 {
 	//go->moveSpeed = HUNGRY_SPEED;
-	go->nearest = NULL;
-	go->countDown = MESSAGE_INTERVAL;
-
-	//week 5
-	int range[] = { 3, 6 };
-	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_FISHFOOD, 2, range));
+	go->countDown = 3.f;
+	go->moveSpeed = 0;
 }
 
 void StateClockworkDead::Update(double dt, GameObject* go)
 {
-	go->countDown += static_cast<float>(dt); //check against this value before sending message(so we don't send the message every frame)
+	go->countDown -= static_cast<float>(dt);
+	if (go->countDown <= 0)
+	{
+		go->active = false;
 
-	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
-	if (go->energy >= 5.f)
-		go->sm->SetNextState("Full", go);
-	else if (go->energy < 0.f)
-	{
-		go->sm->SetNextState("Dead", go);
-	}
-	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
-	if (go->nearest)
-	{
-		if (go->nearest->pos.x > go->pos.x)
-			go->moveLeft = false;
-		else
-			go->moveRight = false;
-		if (go->nearest->pos.y > go->pos.y)
-			go->moveDown = false;
-		else
-			go->moveUp = false;
-	}
-	else //go->nearest is nullptr
-	{
-		if (go->countDown >= MESSAGE_INTERVAL) //ensure at least 1 second interval between messages
+		if (go->nearest == NULL)
+			return;
+
+		if ((go->pos - go->nearest->pos).Length() <= 3 * SceneData::GetInstance()->GetGridSize())
 		{
-			go->countDown -= MESSAGE_INTERVAL;
-			//week 4
-			//send message to Scene requesting for nearest to be updated
-			//message is allocated on the heap (WARNING: expensive. 
-			//either refactor PostOffice to not assume heap-allocated messages,
-			//or pool messages to avoid real-time heap allocation)
-			const float FOOD_DIST = 20.f * SceneData::GetInstance()->GetGridSize();
-			PostOffice::GetInstance()->Send("Scene", new MessageWRU(go, MessageWRU::NEAREST_FISHFOOD, FOOD_DIST));
+			go->nearest->health -= 30;
+
+			if (go->nearest->health <= 0)
+			{
+				if (go->nearest->type == GameObject::GO_BEEFALO)
+				go->nearest->sm->SetNextState("StateBeefaloDead", go->nearest);
+			}
 		}
 	}
 }

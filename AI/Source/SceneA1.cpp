@@ -310,9 +310,13 @@ void SceneA1::Update(double dt)
 					if (go2->health <= 0)
 					{
 						go2->sm->SetNextState("StateClockworkDead", go2);
-						go2->active = false;
+						//go2->active = false;
 
-						go->isAngry = false;
+						if (go->health > 0)
+						{
+							go->sm->SetNextState("StateBeefaloWander", go);
+							go->isAngry = false;
+						}
 					}
 				}
 			}
@@ -343,7 +347,12 @@ void SceneA1::Update(double dt)
 					if (go2->health <= 0)
 					{
 						go2->sm->SetNextState("StateBeefaloDead", go2);
-						go2->active = false;
+						//go2->active = false;
+
+						if (go->health > 0)
+						{
+							go->sm->SetNextState("StateClockworkWander", go);
+						}
 					}
 				}
 			}
