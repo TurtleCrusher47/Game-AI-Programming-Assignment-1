@@ -36,6 +36,9 @@ struct GameObject : public ObjectBase
 	int id;
 	int steps;
 	float energy;
+	int health;
+	int damage;
+	int attackCooldown;
 	float moveSpeed;
 	float countDown;
 	GameObject *nearest;
