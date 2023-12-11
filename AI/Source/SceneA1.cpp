@@ -92,9 +92,9 @@ void SceneA1::InitStateMachines()
 
 	//all Beefalo will share this statemachine
 	sm = m_stateMachines[GameObject::GO_BEEFALO];
-	sm->AddState(new StateBeefaloWander("BeefaloWander"));
-	sm->AddState(new StateBeefaloAngry("BeefaloAngry"));
-	sm->AddState(new StateDead("BeefaloDead"));
+	sm->AddState(new StateBeefaloWander("StateBeefaloWander"));
+	sm->AddState(new StateBeefaloAngry("StateBeefaloAngry"));
+	sm->AddState(new StateDead("StateBeefaloDead"));
 }
 
 GameObject* SceneA1::FetchGO(GameObject::GAMEOBJECT_TYPE type)
@@ -180,7 +180,7 @@ void SceneA1::Update(double dt)
 		go->steps = 0;
 		go->energy = 8.f;
 		go->nearest = NULL;
-		go->sm->SetNextState("StateAngry", go);
+		go->sm->SetNextState("StateBeefaloWander", go);
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
 	{
@@ -355,7 +355,7 @@ void SceneA1::RenderGO(GameObject *go)
 
 		if (go->sm)
 		{
-			if (go->sm->GetCurrentState(go) == "Wander")
+			if (go->sm->GetCurrentState(go) == "StateBeefaloWander")
 				RenderMesh(meshList[GEO_BEEFALO], false);
 			/*else if (go->sm->GetCurrentState(go) == "Angry")
 				RenderMesh(meshList[GEO_FULL], false);
