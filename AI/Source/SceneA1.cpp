@@ -185,9 +185,11 @@ void SceneA1::Update(double dt)
 		go->scale.Set(gridSize, gridSize, gridSize);
 		go->pos.Set(gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, 0);
 		go->target = go->pos;
-		go->steps = 0;
-		go->energy = 8.f;
 		go->nearest = NULL;
+		go->health = 50;
+		go->damage = 34;
+		go->attackCooldown = 3;
+		go->attackCooldownTimer = go->attackCooldown;
 		go->sm->SetNextState("StateBeefaloWander", go);
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
@@ -202,6 +204,12 @@ void SceneA1::Update(double dt)
 		go->scale.Set(gridSize, gridSize, gridSize);
 		go->pos.Set(gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, 0);
 		go->target = go->pos;
+		go->nearest = NULL;
+		go->health = 30;
+		go->damage = 40;
+		go->attackCooldown = 2;
+		go->attackCooldownTimer = go->attackCooldown;
+
 		go->sm->SetNextState("StateClockworkWander", go);
 	}
 	else if (bVState && !Application::IsKeyPressed('V'))
@@ -240,7 +248,7 @@ void SceneA1::Update(double dt)
 		if (!go->active)
 			continue;
 
-		go->
+		go->attackCooldownTimer += dt;
 
 		//week 5 (bug fix)
 		//set nearest to null if nearest is already inactive - so that fish will not hang at the same spot after consuming food
