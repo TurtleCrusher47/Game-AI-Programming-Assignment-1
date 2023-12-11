@@ -242,7 +242,7 @@ void SceneA1::Update(double dt)
 
 		//week 5 (bug fix)
 		//set nearest to null if nearest is already inactive - so that fish will not hang at the same spot after consuming food
-		if (go->nearest!=nullptr && !go->nearest->active)
+		if (go->nearest !=nullptr && !go->nearest->active)
 			go->nearest = nullptr;
 
 		/*if (go->type == GameObject::GO_FISH)
@@ -304,8 +304,9 @@ void SceneA1::Update(double dt)
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
 					{
-						go2->sm->SetNextState("StateBeefaloAngry", go);
+						go2->sm->SetNextState("StateBeefaloAngry", go2);
 						go2->isAngry = true;
+						go2->nearest = go;
 						std::cout << go2->isAngry << std::endl;
 					}
 				}

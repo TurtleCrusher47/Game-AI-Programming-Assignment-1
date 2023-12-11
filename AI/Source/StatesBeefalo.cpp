@@ -44,17 +44,15 @@ StateBeefaloAngry::~StateBeefaloAngry()
 void StateBeefaloAngry::Enter(GameObject* go)
 {
 	go->moveSpeed = FULL_SPEED;
-	go->nearest = NULL;
 	go->countDown = 0;
 }
 
 void StateBeefaloAngry::Update(double dt, GameObject* go)
 {
-	go->countDown += static_cast<float>(dt);
-
 	//once nearest is set, beefalo will chase it
 	if (go->nearest)
 	{
+		std::cout << "Beefalo angry" << std::endl;
 		if (go->nearest->pos.x > go->pos.x)
 			go->moveLeft = false;
 		else
@@ -66,19 +64,7 @@ void StateBeefaloAngry::Update(double dt, GameObject* go)
 	}
 	else //go->nearest is nullptr
 	{
-		if (go->countDown >= MESSAGE_INTERVAL) //ensure at least 1 second interval between messages
-		{
-			go->countDown -= MESSAGE_INTERVAL;
-
-			//week 4
-			//send message to Scene requesting for nearest to be updated
-			//message is allocated on the heap (WARNING: expensive. 
-			//either refactor PostOffice to not assume heap-allocated messages,
-			//or pool messages to avoid real-time heap allocation)
-			const float ENEMY_DIST = 2.f * SceneData::GetInstance()->GetGridSize();
-			PostOffice::GetInstance()->Send("Scene", 
-				new MessageWRU(go, MessageWRU::NEAREST_DAMAGEABLE, ENEMY_DIST));
-		}
+		go->sm->SetNextState("StateBeefaloWander", go);
 	}
 }
 
