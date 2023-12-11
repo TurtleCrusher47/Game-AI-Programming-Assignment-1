@@ -238,7 +238,7 @@ void SceneA1::Update(double dt)
 		if (go->nearest!=nullptr && !go->nearest->active)
 			go->nearest = nullptr;
 
-		if (go->type == GameObject::GO_FISH)
+		/*if (go->type == GameObject::GO_FISH)
 		{
 			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
@@ -263,7 +263,7 @@ void SceneA1::Update(double dt)
 					}
 				}
 			}
-		}
+		}*/
 
 		if (go->type == GameObject::GO_BEEFALO)
 		{
@@ -285,6 +285,25 @@ void SceneA1::Update(double dt)
 				}
 			}
 		}
+		if (go->type == GameObject::GO_CLOCKWORK)
+		{
+			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			{
+				GameObject *go2 = (GameObject *)*it2;
+				if (!go2->active)
+					continue;
+				if (go2->type == GameObject::GO_BEEFALO)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						go2->isAngry = true;
+						std::cout << go2->isAngry << std::endl;
+					}
+				}
+			}
+		}
+
 	}
 
 	//Movement Section
