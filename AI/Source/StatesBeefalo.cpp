@@ -1,4 +1,4 @@
-#include "StatesFish.h"
+#include "StatesBeefalo.h"
 #include "PostOffice.h"
 #include "ConcreteMessages.h"
 #include "SceneData.h"
@@ -8,48 +8,48 @@ static const float ENERGY_DROP_RATE = 0.2f;
 static const float FULL_SPEED = 8.f;
 static const float HUNGRY_SPEED = 4.f;
 
-StateTooFull::StateTooFull(const std::string & stateID)
+StateWander::StateWander(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateTooFull::~StateTooFull()
+StateWander::~StateWander()
 {
 }
 
-void StateTooFull::Enter(GameObject* go)
+void StateWander::Enter(GameObject* go)
 {
 	go->moveSpeed = 0;
 }
 
-void StateTooFull::Update(double dt, GameObject* go)
+void StateWander::Update(double dt, GameObject* go)
 {
 	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
 	if (go->energy < 10.f)
 		go->sm->SetNextState("Full", go);
 }
 
-void StateTooFull::Exit(GameObject* go)
+void StateWander::Exit(GameObject* go)
 {
 }
 
-StateFull::StateFull(const std::string & stateID)
+StateAngry::StateAngry(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateFull::~StateFull()
+StateAngry::~StateAngry()
 {
 }
 
-void StateFull::Enter(GameObject* go)
+void StateAngry::Enter(GameObject* go)
 {
 	go->moveSpeed = FULL_SPEED;
 	go->nearest = NULL;
 	go->countDown = 0;
 }
 
-void StateFull::Update(double dt, GameObject* go)
+void StateAngry::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
@@ -96,20 +96,20 @@ void StateFull::Update(double dt, GameObject* go)
 	}
 }
 
-void StateFull::Exit(GameObject* go)
+void StateAngry::Exit(GameObject* go)
 {
 }
 
-StateHungry::StateHungry(const std::string & stateID)
+StateDead::StateDead(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateHungry::~StateHungry()
+StateDead::~StateDead()
 {
 }
 
-void StateHungry::Enter(GameObject* go)
+void StateDead::Enter(GameObject* go)
 {
 	go->moveSpeed = HUNGRY_SPEED;
 	go->nearest = NULL;
@@ -120,7 +120,7 @@ void StateHungry::Enter(GameObject* go)
 	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_FISHFOOD, 2, range));
 }
 
-void StateHungry::Update(double dt, GameObject* go)
+void StateDead::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt); //check against this value before sending message(so we don't send the message every frame)
 
@@ -159,7 +159,7 @@ void StateHungry::Update(double dt, GameObject* go)
 	}
 }
 
-void StateHungry::Exit(GameObject* go)
+void StateDead::Exit(GameObject* go)
 {
 }
 

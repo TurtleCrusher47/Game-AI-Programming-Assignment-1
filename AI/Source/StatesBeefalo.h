@@ -1,36 +1,36 @@
-#ifndef STATES_FISH_H
-#define STATES_FISH_H
+#ifndef STATES_BEEFALO_H
+#define STATES_BEEFALO_H
 
 #include "State.h"
 #include "GameObject.h"
 
-class StateTooFull : public State
+class StateWander : public State
 {
 public:
-	StateTooFull(const std::string &stateID);
-	virtual ~StateTooFull();
+	StateWander(const std::string &stateID);
+	virtual ~StateWander();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
 
-class StateFull : public State
+class StateAngry : public State
 {
 public:
-	StateFull(const std::string &stateID);
-	virtual ~StateFull();
+	StateAngry(const std::string &stateID);
+	virtual ~StateAngry();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
 
-class StateHungry : public State
+class StateDead : public State
 {
 public:
-	StateHungry(const std::string &stateID);
-	virtual ~StateHungry();
+	StateDead(const std::string &stateID);
+	virtual ~StateDead();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
