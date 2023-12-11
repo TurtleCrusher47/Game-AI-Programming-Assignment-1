@@ -38,6 +38,7 @@ struct GameObject : public ObjectBase
 	float energy;
 	int health;
 	int damage;
+	float attackCooldownTimer;
 	int attackCooldown;
 	float moveSpeed;
 	float countDown;

@@ -240,6 +240,8 @@ void SceneA1::Update(double dt)
 		if (!go->active)
 			continue;
 
+		go->
+
 		//week 5 (bug fix)
 		//set nearest to null if nearest is already inactive - so that fish will not hang at the same spot after consuming food
 		if (go->nearest !=nullptr && !go->nearest->active)
