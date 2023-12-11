@@ -50,11 +50,11 @@ void SceneA1::Init()
 	float gridSize = SceneData::GetInstance()->GetGridSize();
 	float gridOffset = SceneData::GetInstance()->GetGridOffset();
 	int numGrid = SceneData::GetInstance()->GetNumGrid();
-	GameObject *go = FetchGO(GameObject::GO_SHARK);
-	go->scale.Set(gridSize, gridSize, gridSize);
-	go->pos.Set(gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, 0);
-	go->target = go->pos;
-	go->sm->SetNextState("Happy", go);
+	//GameObject *go = FetchGO(GameObject::GO_SHARK);
+	//go->scale.Set(gridSize, gridSize, gridSize);
+	//go->pos.Set(gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, 0);
+	//go->target = go->pos;
+	//go->sm->SetNextState("Happy", go);
 
 	//week 4
 	//register this scene with the "post office"
@@ -264,6 +264,25 @@ void SceneA1::Update(double dt)
 				}
 			}
 		}
+
+		if (go->type == GameObject::GO_BEEFALO)
+		{
+			// If the Beefalo is not angry, do not do anything with the collisions
+			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			{
+				GameObject *go2 = (GameObject *)*it2;
+				if (!go2->active)
+					continue;
+				if (go2->type == GameObject::GO_CLOCKWORK)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						go->energy = -1;
+					}
+				}
+			}
+		}
 	}
 
 	//Movement Section
@@ -357,12 +376,10 @@ void SceneA1::RenderGO(GameObject *go)
 		{
 			if (go->sm->GetCurrentState(go) == "StateBeefaloWander")
 				RenderMesh(meshList[GEO_BEEFALO], false);
-			/*else if (go->sm->GetCurrentState(go) == "Angry")
-				RenderMesh(meshList[GEO_FULL], false);
-			else if (go->sm->GetCurrentState(go) == "Dead")
-				RenderMesh(meshList[GEO_HUNGRY], false);
-			else
-				RenderMesh(meshList[GEO_DEAD], false);*/
+			else if (go->sm->GetCurrentState(go) == "StateBeefaloAngry")
+				RenderMesh(meshList[GEO_BEEFALOANGRY], false);
+			else if (go->sm->GetCurrentState(go) == "StateBeefaloDead")
+				RenderMesh(meshList[GEO_BEEFALODEAD], false);
 		}
 
 		modelStack.PushMatrix();
@@ -512,7 +529,7 @@ void SceneA1::Render()
 	ss << "Food:" << m_numGO[GameObject::GO_FISHFOOD];
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 12);
 	
-	RenderTextOnScreen(meshList[GEO_TEXT], "Aquarium", Color(0, 1, 0), 3, 50, 0);
+	RenderTextOnScreen(meshList[GEO_TEXT], "Savannah", Color(0, 1, 0), 3, 50, 0);
 }
 
 void SceneA1::Exit()

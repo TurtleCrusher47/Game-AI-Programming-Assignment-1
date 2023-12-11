@@ -43,6 +43,8 @@ struct GameObject : public ObjectBase
 	bool moveRight;
 	bool moveUp;
 	bool moveDown;
+
+	bool isAngry;
 	StateMachine *sm;
 	//each instance has to have its own currState and nextState pointer(can't be shared)
 	State* currState; //week 5: should probably be private. put that under TODO

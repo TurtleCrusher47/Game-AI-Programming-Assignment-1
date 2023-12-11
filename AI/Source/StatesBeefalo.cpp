@@ -8,6 +8,8 @@ static const float ENERGY_DROP_RATE = 0.2f;
 static const float FULL_SPEED = 8.f;
 static const float HUNGRY_SPEED = 4.f;
 
+static const float WANDER_SPEED = 3.f;
+
 StateBeefaloWander::StateBeefaloWander(const std::string & stateID)
 	: State(stateID)
 {
@@ -19,14 +21,11 @@ StateBeefaloWander::~StateBeefaloWander()
 
 void StateBeefaloWander::Enter(GameObject* go)
 {
-	go->moveSpeed = 0;
+	go->moveSpeed = WANDER_SPEED;
 }
 
 void StateBeefaloWander::Update(double dt, GameObject* go)
 {
-	/*go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
-	if (go->energy < 10.f)
-		go->sm->SetNextState("Full", go);*/
 }
 
 void StateBeefaloWander::Exit(GameObject* go)
@@ -60,23 +59,17 @@ void StateBeefaloAngry::Update(double dt, GameObject* go)
 		go->sm->SetNextState("Hungry", go);
 	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
 
-	//once nearest is set, fish will continue to move away from shark even
-	//when they have move significantly far away (until it changes state).
+	//once nearest is set, beefalo will chase it
 	if (go->nearest)
 	{
 		if (go->nearest->pos.x > go->pos.x)
-			go->moveRight = false;
-		else
 			go->moveLeft = false;
-		if (go->nearest->pos.y > go->pos.y)
-			go->moveUp = false;
 		else
+			go->moveRight = false;
+		if (go->nearest->pos.y > go->pos.y)
 			go->moveDown = false;
-
-		//if shark is far enough, reset nearest to null
-		const float SHARK_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
-		if ((go->pos - go->nearest->pos).Length() > SHARK_DIST)
-			go->nearest = nullptr;
+		else
+			go->moveUp = false;
 	}
 	else //go->nearest is nullptr
 	{
