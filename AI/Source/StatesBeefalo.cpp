@@ -49,6 +49,7 @@ void StateBeefaloAngry::Enter(GameObject* go)
 
 void StateBeefaloAngry::Update(double dt, GameObject* go)
 {
+	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
 	//once nearest is set, beefalo will chase it
 	if (go->nearest)
 	{

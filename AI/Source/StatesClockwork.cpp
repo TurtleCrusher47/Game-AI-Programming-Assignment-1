@@ -74,6 +74,7 @@ void StateClockworkChase::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
+	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
 	//once nearest is set, clockwork will chase it
 	if (go->nearest)
 	{
