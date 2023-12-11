@@ -52,13 +52,6 @@ void StateBeefaloAngry::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
-	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
-	if (go->energy >= 10.f)
-		go->sm->SetNextState("TooFull", go);
-	else if (go->energy < 5.f)
-		go->sm->SetNextState("Hungry", go);
-	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
-
 	//once nearest is set, beefalo will chase it
 	if (go->nearest)
 	{
@@ -82,9 +75,9 @@ void StateBeefaloAngry::Update(double dt, GameObject* go)
 			//message is allocated on the heap (WARNING: expensive. 
 			//either refactor PostOffice to not assume heap-allocated messages,
 			//or pool messages to avoid real-time heap allocation)
-			const float SHARK_DIST = 6.f * SceneData::GetInstance()->GetGridSize();
+			const float ENEMY_DIST = 2.f * SceneData::GetInstance()->GetGridSize();
 			PostOffice::GetInstance()->Send("Scene", 
-				new MessageWRU(go, MessageWRU::NEAREST_SHARK, SHARK_DIST));
+				new MessageWRU(go, MessageWRU::NEAREST_DAMAGEABLE, ENEMY_DIST));
 		}
 	}
 }

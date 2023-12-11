@@ -268,6 +268,8 @@ void SceneA1::Update(double dt)
 		if (go->type == GameObject::GO_BEEFALO)
 		{
 			// If the Beefalo is not angry, do not do anything with the collisions
+			if (!go->isAngry)
+				return;
 			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
 				GameObject *go2 = (GameObject *)*it2;
@@ -278,7 +280,7 @@ void SceneA1::Update(double dt)
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
 					{
-						go->energy = -1;
+						std::cout << "Angry beefalo hit" << std::endl;
 					}
 				}
 			}
@@ -600,9 +602,10 @@ void SceneA1::ProcessMessages()
 				if (!go2->active)
 					continue;
 
-				//message indicates go is hunting for nearest fish food
-				if (messageWRU->type == MessageWRU::NEAREST_FISHFOOD &&
-					go2->type == GameObject::GO_FISHFOOD)
+				// Message to look for nearest damageable enemy
+				if (messageWRU->type == MessageWRU::NEAREST_DAMAGEABLE &&
+					go2->type != GameObject::GO_BEEHIVE &&
+					go2->type != GameObject::GO_NIGHTMARE)
 				{
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < messageWRU->threshold && distance < nearestDistance)
@@ -611,39 +614,52 @@ void SceneA1::ProcessMessages()
 						go->nearest = go2;
 					}
 				}
-				//message indicates go is seeking nearest shark
-				else if (messageWRU->type == MessageWRU::NEAREST_SHARK &&
-						 go2->type == GameObject::GO_SHARK)
-				{
-					float distance = (go->pos - go2->pos).Length();
-					if (distance < messageWRU->threshold && distance < nearestDistance)
-					{
-						nearestDistance = distance;
-						go->nearest = go2;
-					}
-				}
-				//message indicates go is hunting for full fish
-				else if (messageWRU->type == MessageWRU::NEAREST_FULLFISH &&
-						 go2->type == GameObject::GO_FISH)
-				{
-					float distance = (go->pos - go2->pos).Length();
-					if (distance < nearestDistance &&
-						(go2->sm->GetCurrentState(go2) == "TooFull" || go2->sm->GetCurrentState(go2) == "Full"))
-					{
-						nearestDistance = distance;
-						go->nearest = go2;
-					}
-				}
-				//message indicated go is hunting for highest energy fish
-				else if (messageWRU->type == MessageWRU::HIGHEST_ENERGYFISH &&
-						 go2->type == GameObject::GO_FISH)
-				{
-					if (go2->energy > highestEnergy)
-					{
-						highestEnergy = go2->energy;
-						go->nearest = go2;
-					}
-				}
+
+
+				////message indicates go is hunting for nearest fish food
+				//if (messageWRU->type == MessageWRU::NEAREST_FISHFOOD &&
+				//	go2->type == GameObject::GO_FISHFOOD)
+				//{
+				//	float distance = (go->pos - go2->pos).Length();
+				//	if (distance < messageWRU->threshold && distance < nearestDistance)
+				//	{
+				//		nearestDistance = distance;
+				//		go->nearest = go2;
+				//	}
+				//}
+				////message indicates go is seeking nearest shark
+				//else if (messageWRU->type == MessageWRU::NEAREST_SHARK &&
+				//		 go2->type == GameObject::GO_SHARK)
+				//{
+				//	float distance = (go->pos - go2->pos).Length();
+				//	if (distance < messageWRU->threshold && distance < nearestDistance)
+				//	{
+				//		nearestDistance = distance;
+				//		go->nearest = go2;
+				//	}
+				//}
+				////message indicates go is hunting for full fish
+				//else if (messageWRU->type == MessageWRU::NEAREST_FULLFISH &&
+				//		 go2->type == GameObject::GO_FISH)
+				//{
+				//	float distance = (go->pos - go2->pos).Length();
+				//	if (distance < nearestDistance &&
+				//		(go2->sm->GetCurrentState(go2) == "TooFull" || go2->sm->GetCurrentState(go2) == "Full"))
+				//	{
+				//		nearestDistance = distance;
+				//		go->nearest = go2;
+				//	}
+				//}
+				////message indicated go is hunting for highest energy fish
+				//else if (messageWRU->type == MessageWRU::HIGHEST_ENERGYFISH &&
+				//		 go2->type == GameObject::GO_FISH)
+				//{
+				//	if (go2->energy > highestEnergy)
+				//	{
+				//		highestEnergy = go2->energy;
+				//		go->nearest = go2;
+				//	}
+				//}
 			}
 
 			//week 5: make food stop
