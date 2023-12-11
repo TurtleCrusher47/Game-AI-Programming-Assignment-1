@@ -191,6 +191,7 @@ void SceneA1::Update(double dt)
 		go->attackCooldown = 3;
 		go->attackCooldownTimer = go->attackCooldown;
 		go->sm->SetNextState("StateBeefaloWander", go);
+		go->isAngry = false;
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
 	{
@@ -286,7 +287,7 @@ void SceneA1::Update(double dt)
 		{
 			// If the Beefalo is not angry, do not do anything with the collisions
 			if (!go->isAngry)
-				return;
+				continue;
 			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
 				GameObject *go2 = (GameObject *)*it2;
@@ -298,6 +299,20 @@ void SceneA1::Update(double dt)
 					if (distance < gridSize)
 					{
 						std::cout << "Angry beefalo hit" << std::endl;
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateClockworkDead", go2);
+						go2->active = false;
+
+						go->isAngry = false;
 					}
 				}
 			}
@@ -317,11 +332,23 @@ void SceneA1::Update(double dt)
 						go2->sm->SetNextState("StateBeefaloAngry", go2);
 						go2->isAngry = true;
 						go2->nearest = go;
-						std::cout << go2->isAngry << std::endl;
+
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateBeefaloDead", go2);
+						go2->active = false;
 					}
 				}
 			}
 		}
+		
 
 	}
 
@@ -423,20 +450,11 @@ void SceneA1::RenderGO(GameObject *go)
 		}
 
 		modelStack.PushMatrix();
-			ss.precision(3);
-			ss << "[" << go->pos.x << ", " << go->pos.y << "]";
-			modelStack.Scale(0.5f, 0.5f, 0.5f);
-			modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, SceneData::GetInstance()->GetGridSize() / 4, 0);
-			RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
-		modelStack.PopMatrix();
-
-		modelStack.PushMatrix();
-			ss.str("");
-			ss.precision(3);
-			ss << go->energy;
-			modelStack.Scale(0.5f, 0.5f, 0.5f);
-			modelStack.Translate(0, -SceneData::GetInstance()->GetGridSize() / 4, 0);
-			RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		ss.precision(3);
+		ss << "[" << go->health << "]";
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, SceneData::GetInstance()->GetGridSize() / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
 		modelStack.PopMatrix();
 		modelStack.PopMatrix();
 		break;
@@ -454,14 +472,13 @@ void SceneA1::RenderGO(GameObject *go)
 			else
 				RenderMesh(meshList[GEO_CLOCKWORKDEAD], false);
 		}
-			modelStack.PushMatrix();
-				ss.str("");
-				ss.precision(3);
-				ss << "[" << go->pos.x << ", " << go->pos.y << "]";
-				modelStack.Scale(0.5f, 0.5f, 0.5f);
-				modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, -SceneData::GetInstance()->GetGridSize() / 4, 0);
-				RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
-			modelStack.PopMatrix();
+		modelStack.PushMatrix();
+		ss.precision(3);
+		ss << "[" << go->health << "]";
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, SceneData::GetInstance()->GetGridSize() / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		modelStack.PopMatrix();
 		modelStack.PopMatrix();
 		break;
 	case GameObject::GO_FISHFOOD:
