@@ -24,9 +24,9 @@ void StateWander::Enter(GameObject* go)
 
 void StateWander::Update(double dt, GameObject* go)
 {
-	go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
+	/*go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
 	if (go->energy < 10.f)
-		go->sm->SetNextState("Full", go);
+		go->sm->SetNextState("Full", go);*/
 }
 
 void StateWander::Exit(GameObject* go)

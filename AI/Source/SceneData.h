@@ -11,6 +11,10 @@ public:
 	void SetObjectCount(const int objectCount);
 	int GetFishCount() const;
 	void SetFishCount(const int fishCount);
+
+	int GetBeefaloCount() const;
+	void SetBeefaloCount(const int beefaloCount);
+
 	int GetNumGrid() const;
 	void SetNumGrid(const int numGrid);
 	float GetGridSize() const;
@@ -23,6 +27,8 @@ private:
 	~SceneData();
 	int m_objectCount;
 	int m_fishCount;
+
+	int m_beefaloCount;
 	int m_noGrid;
 	float m_gridSize;
 	float m_gridOffset;

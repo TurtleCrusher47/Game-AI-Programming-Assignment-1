@@ -144,14 +144,28 @@ void SceneBase::Init()
 	// Assignment
 	meshList[GEO_BEE] = MeshBuilder::GenerateQuad("bee", Color(1, 1, 1));
 	meshList[GEO_BEE]->textureID = LoadTGA("Image//bee.tga");
+	meshList[GEO_BEEANGRY] = MeshBuilder::GenerateQuad("beeangry", Color(1, 1, 1));
+	meshList[GEO_BEEANGRY]->textureID = LoadTGA("Image//bee_angy.tga");
+	meshList[GEO_BEEDEAD] = MeshBuilder::GenerateQuad("beedead", Color(1, 1, 1));
+	meshList[GEO_BEEDEAD]->textureID = LoadTGA("Image//bee_ded.tga");
 	meshList[GEO_BEEHIVE] = MeshBuilder::GenerateQuad("beehive", Color(1, 1, 1));
 	meshList[GEO_BEEHIVE]->textureID = LoadTGA("Image//bee.tga");
 	meshList[GEO_NIGHTMARE] = MeshBuilder::GenerateQuad("nightmare", Color(1, 1, 1));
 	meshList[GEO_NIGHTMARE]->textureID = LoadTGA("Image//nightmare.tga");
+	meshList[GEO_NIGHTMAREANGRY] = MeshBuilder::GenerateQuad("nightmareangry", Color(1, 1, 1));
+	meshList[GEO_NIGHTMAREANGRY]->textureID = LoadTGA("Image//crawling_horror_angy.tga");
 	meshList[GEO_CLOCKWORK] = MeshBuilder::GenerateQuad("clockwork", Color(1, 1, 1));
 	meshList[GEO_CLOCKWORK]->textureID = LoadTGA("Image//clockwork.tga");
+	meshList[GEO_CLOCKWORKANGRY] = MeshBuilder::GenerateQuad("clockworkangry", Color(1, 1, 1));
+	meshList[GEO_CLOCKWORKANGRY]->textureID = LoadTGA("Image//clockwork_knight_angy.tga");
+	meshList[GEO_CLOCKWORKDEAD] = MeshBuilder::GenerateQuad("clockworkdead", Color(1, 1, 1));
+	meshList[GEO_CLOCKWORKDEAD]->textureID = LoadTGA("Image//clockwork_knight_ded.tga");
 	meshList[GEO_BEEFALO] = MeshBuilder::GenerateQuad("beefalo", Color(1, 1, 1));
 	meshList[GEO_BEEFALO]->textureID = LoadTGA("Image//beefalo.tga");
+	meshList[GEO_BEEFALOANGRY] = MeshBuilder::GenerateQuad("beefaloangry", Color(1, 1, 1));
+	meshList[GEO_BEEFALOANGRY]->textureID = LoadTGA("Image//beefalo_angy.tga");
+	meshList[GEO_BEEFALODEAD] = MeshBuilder::GenerateQuad("beefalodead", Color(1, 1, 1));
+	meshList[GEO_BEEFALODEAD]->textureID = LoadTGA("Image//beefalo_ded.tga");
 
 
 	bLightEnabled = false;

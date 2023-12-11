@@ -20,6 +20,17 @@ void SceneData::SetFishCount(const int fishCount)
 	m_fishCount = fishCount;
 }
 
+int SceneData::GetBeefaloCount() const
+{
+	return m_beefaloCount;
+	4
+}
+
+void SceneData::SetBeefaloCount(const int beefaloCount)
+{
+	m_beefaloCount = beefaloCount;
+}
+
 SceneData::SceneData()
 {
 }

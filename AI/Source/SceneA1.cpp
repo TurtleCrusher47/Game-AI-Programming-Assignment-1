@@ -5,6 +5,7 @@
 #include "StatesFish.h"
 #include "StatesShark.h"
 #include "StatesFishFood.h"
+#include "StatesBeefalo.h"
 #include "SceneData.h"
 #include "PostOffice.h"
 #include "ConcreteMessages.h"
@@ -38,6 +39,9 @@ void SceneA1::Init()
 
 	SceneData::GetInstance()->SetObjectCount(0);
 	SceneData::GetInstance()->SetFishCount(0);
+
+	SceneData::GetInstance()->SetBeefaloCount(0);
+
 	SceneData::GetInstance()->SetNumGrid(20);
 	SceneData::GetInstance()->SetGridSize(m_worldHeight / SceneData::GetInstance()->GetNumGrid());
 	SceneData::GetInstance()->SetGridOffset(SceneData::GetInstance()->GetGridSize() * 0.5f);
@@ -65,6 +69,8 @@ void SceneA1::InitStateMachines()
 	m_stateMachines.insert(std::make_pair(GameObject::GO_FISH, new StateMachine()));
 	m_stateMachines.insert(std::make_pair(GameObject::GO_FISHFOOD, new StateMachine()));
 	m_stateMachines.insert(std::make_pair(GameObject::GO_SHARK, new StateMachine()));
+
+	m_stateMachines.insert(std::make_pair(GameObject::GO_BEEFALO, new StateMachine()));
 	
 	//all fish will share this statemachine
 	StateMachine* sm = m_stateMachines[GameObject::GO_FISH];
@@ -83,6 +89,12 @@ void SceneA1::InitStateMachines()
 	sm->AddState(new StateCrazy("Crazy"));
 	sm->AddState(new StateNaughty("Naughty"));
 	sm->AddState(new StateHappy("Happy"));
+
+	//all Beefalo will share this statemachine
+	sm = m_stateMachines[GameObject::GO_BEEFALO];
+	sm->AddState(new StateWander("Wander"));
+	sm->AddState(new StateAngry("Angry"));
+	sm->AddState(new StateDead("Dead"));
 }
 
 GameObject* SceneA1::FetchGO(GameObject::GAMEOBJECT_TYPE type)
@@ -161,14 +173,14 @@ void SceneA1::Update(double dt)
 	if (!bSpaceState && Application::IsKeyPressed(VK_SPACE))
 	{
 		bSpaceState = true;
-		GameObject *go = FetchGO(GameObject::GO_FISH);
+		GameObject *go = FetchGO(GameObject::GO_BEEFALO);
 		go->scale.Set(gridSize, gridSize, gridSize);
 		go->pos.Set(gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, 0);
 		go->target = go->pos;
 		go->steps = 0;
 		go->energy = 8.f;
 		go->nearest = NULL;
-		go->sm->SetNextState("Full", go);
+		go->sm->SetNextState("StateAngry", go);
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
 	{
@@ -336,21 +348,21 @@ void SceneA1::RenderGO(GameObject *go)
 		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
 		modelStack.PopMatrix();
 		break;
-	case GameObject::GO_FISH:
+	case GameObject::GO_BEEFALO:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 
 		if (go->sm)
 		{
-			if (go->sm->GetCurrentState(go) == "TooFull")
-				RenderMesh(meshList[GEO_TOOFULL], false);
-			else if (go->sm->GetCurrentState(go) == "Full")
+			if (go->sm->GetCurrentState(go) == "Wander")
+				RenderMesh(meshList[GEO_BEEFALO], false);
+			/*else if (go->sm->GetCurrentState(go) == "Angry")
 				RenderMesh(meshList[GEO_FULL], false);
-			else if (go->sm->GetCurrentState(go) == "Hungry")
+			else if (go->sm->GetCurrentState(go) == "Dead")
 				RenderMesh(meshList[GEO_HUNGRY], false);
 			else
-				RenderMesh(meshList[GEO_DEAD], false);
+				RenderMesh(meshList[GEO_DEAD], false);*/
 		}
 
 		modelStack.PushMatrix();
