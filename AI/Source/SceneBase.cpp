@@ -151,7 +151,7 @@ void SceneBase::Init()
 	meshList[GEO_BEEHIVE] = MeshBuilder::GenerateQuad("beehive", Color(1, 1, 1));
 	meshList[GEO_BEEHIVE]->textureID = LoadTGA("Image//bee.tga");
 	meshList[GEO_NIGHTMARE] = MeshBuilder::GenerateQuad("nightmare", Color(1, 1, 1));
-	meshList[GEO_NIGHTMARE]->textureID = LoadTGA("Image//nightmare.tga");
+	meshList[GEO_NIGHTMARE]->textureID = LoadTGA("Image//crawlinghorror.tga");
 	meshList[GEO_NIGHTMAREANGRY] = MeshBuilder::GenerateQuad("nightmareangry", Color(1, 1, 1));
 	meshList[GEO_NIGHTMAREANGRY]->textureID = LoadTGA("Image//crawling_horror_angy.tga");
 	meshList[GEO_CLOCKWORK] = MeshBuilder::GenerateQuad("clockwork", Color(1, 1, 1));

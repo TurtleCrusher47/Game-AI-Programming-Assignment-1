@@ -6,6 +6,7 @@
 #include "StatesShark.h"
 #include "StatesFishFood.h"
 #include "StatesBeefalo.h"
+#include "StatesClockwork.h"
 #include "SceneData.h"
 #include "PostOffice.h"
 #include "ConcreteMessages.h"
@@ -71,6 +72,7 @@ void SceneA1::InitStateMachines()
 	m_stateMachines.insert(std::make_pair(GameObject::GO_SHARK, new StateMachine()));
 
 	m_stateMachines.insert(std::make_pair(GameObject::GO_BEEFALO, new StateMachine()));
+	m_stateMachines.insert(std::make_pair(GameObject::GO_CLOCKWORK, new StateMachine()));
 	
 	//all fish will share this statemachine
 	StateMachine* sm = m_stateMachines[GameObject::GO_FISH];
@@ -94,7 +96,13 @@ void SceneA1::InitStateMachines()
 	sm = m_stateMachines[GameObject::GO_BEEFALO];
 	sm->AddState(new StateBeefaloWander("StateBeefaloWander"));
 	sm->AddState(new StateBeefaloAngry("StateBeefaloAngry"));
-	sm->AddState(new StateDead("StateBeefaloDead"));
+	sm->AddState(new StateBeefaloDead("StateBeefaloDead"));
+
+	//all Clockwork will share this statemachine
+	sm = m_stateMachines[GameObject::GO_CLOCKWORK];
+	sm->AddState(new StateClockworkWander("StateClockworkWander"));
+	sm->AddState(new StateClockworkChase("StateClockworkChase"));
+	sm->AddState(new StateClockworkDead("StateClockworkDead"));
 }
 
 GameObject* SceneA1::FetchGO(GameObject::GAMEOBJECT_TYPE type)
@@ -190,12 +198,11 @@ void SceneA1::Update(double dt)
 	if (!bVState && Application::IsKeyPressed('V'))
 	{
 		bVState = true;
-		GameObject *go = FetchGO(GameObject::GO_FISHFOOD);
+		GameObject *go = FetchGO(GameObject::GO_CLOCKWORK);
 		go->scale.Set(gridSize, gridSize, gridSize);
 		go->pos.Set(gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, 0);
 		go->target = go->pos;
-		go->moveSpeed = FOOD_SPEED;
-		go->sm->SetNextState("Grow", go);
+		go->sm->SetNextState("StateClockworkWander", go);
 	}
 	else if (bVState && !Application::IsKeyPressed('V'))
 	{
@@ -297,6 +304,7 @@ void SceneA1::Update(double dt)
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
 					{
+						go2->sm->SetNextState("StateBeefaloAngry", go);
 						go2->isAngry = true;
 						std::cout << go2->isAngry << std::endl;
 					}
@@ -421,19 +429,19 @@ void SceneA1::RenderGO(GameObject *go)
 		modelStack.PopMatrix();
 		modelStack.PopMatrix();
 		break;
-	case GameObject::GO_SHARK:
+	case GameObject::GO_CLOCKWORK:
 		modelStack.PushMatrix();
 		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
 		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 
 		if (go->sm)
 		{
-			if (go->sm->GetCurrentState(go) == "Crazy")
-				RenderMesh(meshList[GEO_CRAZY], false);
-			else if (go->sm->GetCurrentState(go) == "Happy")
-				RenderMesh(meshList[GEO_HAPPY], false);
+			if (go->sm->GetCurrentState(go) == "StateClockworkWander")
+				RenderMesh(meshList[GEO_CLOCKWORK], false);
+			else if (go->sm->GetCurrentState(go) == "StateClockworkChase")
+				RenderMesh(meshList[GEO_CLOCKWORKANGRY], false);
 			else
-				RenderMesh(meshList[GEO_SHARK], false);
+				RenderMesh(meshList[GEO_CLOCKWORKDEAD], false);
 		}
 			modelStack.PushMatrix();
 				ss.str("");
