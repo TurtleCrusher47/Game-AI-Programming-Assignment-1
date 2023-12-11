@@ -23,7 +23,6 @@ void SceneData::SetFishCount(const int fishCount)
 int SceneData::GetBeefaloCount() const
 {
 	return m_beefaloCount;
-	4
 }
 
 void SceneData::SetBeefaloCount(const int beefaloCount)

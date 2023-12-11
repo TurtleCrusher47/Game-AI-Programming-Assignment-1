@@ -172,6 +172,7 @@
     <ClInclude Include="Source\ObjectBase.h" />
     <ClInclude Include="Source\PostOffice.h" />
     <ClInclude Include="Source\Scene.h" />
+    <ClInclude Include="Source\SceneA1.h" />
     <ClInclude Include="Source\SceneBase.h" />
     <ClInclude Include="Source\SceneData.h" />
     <ClInclude Include="Source\SceneKnight.h" />

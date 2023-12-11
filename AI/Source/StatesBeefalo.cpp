@@ -8,48 +8,48 @@ static const float ENERGY_DROP_RATE = 0.2f;
 static const float FULL_SPEED = 8.f;
 static const float HUNGRY_SPEED = 4.f;
 
-StateWander::StateWander(const std::string & stateID)
+StateBeefaloWander::StateBeefaloWander(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateWander::~StateWander()
+StateBeefaloWander::~StateBeefaloWander()
 {
 }
 
-void StateWander::Enter(GameObject* go)
+void StateBeefaloWander::Enter(GameObject* go)
 {
 	go->moveSpeed = 0;
 }
 
-void StateWander::Update(double dt, GameObject* go)
+void StateBeefaloWander::Update(double dt, GameObject* go)
 {
 	/*go->energy -= ENERGY_DROP_RATE * static_cast<float>(dt);
 	if (go->energy < 10.f)
 		go->sm->SetNextState("Full", go);*/
 }
 
-void StateWander::Exit(GameObject* go)
+void StateBeefaloWander::Exit(GameObject* go)
 {
 }
 
-StateAngry::StateAngry(const std::string & stateID)
+StateBeefaloAngry::StateBeefaloAngry(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateAngry::~StateAngry()
+StateBeefaloAngry::~StateBeefaloAngry()
 {
 }
 
-void StateAngry::Enter(GameObject* go)
+void StateBeefaloAngry::Enter(GameObject* go)
 {
 	go->moveSpeed = FULL_SPEED;
 	go->nearest = NULL;
 	go->countDown = 0;
 }
 
-void StateAngry::Update(double dt, GameObject* go)
+void StateBeefaloAngry::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
@@ -96,20 +96,20 @@ void StateAngry::Update(double dt, GameObject* go)
 	}
 }
 
-void StateAngry::Exit(GameObject* go)
+void StateBeefaloAngry::Exit(GameObject* go)
 {
 }
 
-StateDead::StateDead(const std::string & stateID)
+StateBeefaloDead::StateBeefaloDead(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateDead::~StateDead()
+StateBeefaloDead::~StateBeefaloDead()
 {
 }
 
-void StateDead::Enter(GameObject* go)
+void StateBeefaloDead::Enter(GameObject* go)
 {
 	go->moveSpeed = HUNGRY_SPEED;
 	go->nearest = NULL;
@@ -120,7 +120,7 @@ void StateDead::Enter(GameObject* go)
 	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_FISHFOOD, 2, range));
 }
 
-void StateDead::Update(double dt, GameObject* go)
+void StateBeefaloDead::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt); //check against this value before sending message(so we don't send the message every frame)
 
@@ -159,34 +159,6 @@ void StateDead::Update(double dt, GameObject* go)
 	}
 }
 
-void StateDead::Exit(GameObject* go)
-{
-}
-
-StateDead::StateDead(const std::string & stateID)
-	: State(stateID)
-{
-}
-
-StateDead::~StateDead()
-{
-}
-
-void StateDead::Enter(GameObject* go)
-{
-	go->countDown = 3.f;
-	go->moveSpeed = 0;
-}
-
-void StateDead::Update(double dt, GameObject* go)
-{
-	go->countDown -= static_cast<float>(dt);
-	if (go->countDown < 0)
-	{
-		go->active = false;
-	}
-}
-
-void StateDead::Exit(GameObject* go)
+void StateBeefaloDead::Exit(GameObject* go)
 {
 }

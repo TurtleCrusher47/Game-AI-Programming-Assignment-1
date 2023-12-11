@@ -92,9 +92,9 @@ void SceneA1::InitStateMachines()
 
 	//all Beefalo will share this statemachine
 	sm = m_stateMachines[GameObject::GO_BEEFALO];
-	sm->AddState(new StateWander("Wander"));
-	sm->AddState(new StateAngry("Angry"));
-	sm->AddState(new StateDead("Dead"));
+	sm->AddState(new StateBeefaloWander("BeefaloWander"));
+	sm->AddState(new StateBeefaloAngry("BeefaloAngry"));
+	sm->AddState(new StateDead("BeefaloDead"));
 }
 
 GameObject* SceneA1::FetchGO(GameObject::GAMEOBJECT_TYPE type)
