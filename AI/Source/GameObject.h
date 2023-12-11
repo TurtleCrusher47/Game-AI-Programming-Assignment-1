@@ -25,6 +25,7 @@ struct GameObject : public ObjectBase
 		GO_WHITE,
 		GO_TOTAL, //must be last
 	};
+
 	GAMEOBJECT_TYPE type;
 	Vector3 pos;
 	Vector3 vel;
