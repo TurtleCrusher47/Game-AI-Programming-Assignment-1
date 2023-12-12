@@ -118,9 +118,9 @@ StateClockworkDead::~StateClockworkDead()
 
 void StateClockworkDead::Enter(GameObject* go)
 {
-	//go->moveSpeed = HUNGRY_SPEED;
 	go->countDown = 3.f;
 	go->moveSpeed = 0;
+	go->damage = 0;
 }
 
 void StateClockworkDead::Update(double dt, GameObject* go)
@@ -139,8 +139,8 @@ void StateClockworkDead::Update(double dt, GameObject* go)
 
 			if (go->nearest->health <= 0)
 			{
-				if (go->nearest->type == GameObject::GO_BEEFALO)
-				go->nearest->sm->SetNextState("StateBeefaloDead", go->nearest);
+				if (go->nearest->type == GameObject::GO_WOLFGANG)
+				go->nearest->sm->SetNextState("StateWolfgangDead", go->nearest);
 			}
 		}
 	}

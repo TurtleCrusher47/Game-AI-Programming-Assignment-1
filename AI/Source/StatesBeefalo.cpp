@@ -88,7 +88,6 @@ void StateBeefaloAngry::Update(double dt, GameObject* go)
 	//once nearest is set, beefalo will chase it
 	if (go->nearest)
 	{
-		std::cout << "Beefalo angry" << std::endl;
 		if (go->nearest->pos.x > go->pos.x)
 			go->moveLeft = false;
 		else
@@ -119,7 +118,7 @@ StateBeefaloDead::~StateBeefaloDead()
 
 void StateBeefaloDead::Enter(GameObject* go)
 {
-	go->countDown = 3.f;
+	go->countDown = 1.f;
 	go->moveSpeed = 0;
 }
 

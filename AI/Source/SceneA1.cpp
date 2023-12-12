@@ -489,7 +489,35 @@ void SceneA1::Update(double dt)
 
 						if (go->health > 0)
 						{
-							go->hunger += 50;
+							go->hunger += 20;
+
+							if (go->hunger > 80)
+							{
+								int distance[] = { 1, 1 };
+								PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_WOLFGANG, 1, distance));
+							}
+						}
+					}
+				}
+				if (go2->type == GameObject::GO_CLOCKWORK)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateClockworkDead", go2);
+
+						if (go->health > 0)
+						{
+							go->damage += 10;
 						}
 					}
 				}
@@ -950,52 +978,6 @@ void SceneA1::ProcessMessages()
 						go->nearest = go2;
 					}
 				}
-
-
-				////message indicates go is hunting for nearest fish food
-				//if (messageWRU->type == MessageWRU::NEAREST_FISHFOOD &&
-				//	go2->type == GameObject::GO_FISHFOOD)
-				//{
-				//	float distance = (go->pos - go2->pos).Length();
-				//	if (distance < messageWRU->threshold && distance < nearestDistance)
-				//	{
-				//		nearestDistance = distance;
-				//		go->nearest = go2;
-				//	}
-				//}
-				////message indicates go is seeking nearest shark
-				//else if (messageWRU->type == MessageWRU::NEAREST_SHARK &&
-				//		 go2->type == GameObject::GO_SHARK)
-				//{
-				//	float distance = (go->pos - go2->pos).Length();
-				//	if (distance < messageWRU->threshold && distance < nearestDistance)
-				//	{
-				//		nearestDistance = distance;
-				//		go->nearest = go2;
-				//	}
-				//}
-				////message indicates go is hunting for full fish
-				//else if (messageWRU->type == MessageWRU::NEAREST_FULLFISH &&
-				//		 go2->type == GameObject::GO_FISH)
-				//{
-				//	float distance = (go->pos - go2->pos).Length();
-				//	if (distance < nearestDistance &&
-				//		(go2->sm->GetCurrentState(go2) == "TooFull" || go2->sm->GetCurrentState(go2) == "Full"))
-				//	{
-				//		nearestDistance = distance;
-				//		go->nearest = go2;
-				//	}
-				//}
-				////message indicated go is hunting for highest energy fish
-				//else if (messageWRU->type == MessageWRU::HIGHEST_ENERGYFISH &&
-				//		 go2->type == GameObject::GO_FISH)
-				//{
-				//	if (go2->energy > highestEnergy)
-				//	{
-				//		highestEnergy = go2->energy;
-				//		go->nearest = go2;
-				//	}
-				//}
 			}
 
 			//week 5: make food stop

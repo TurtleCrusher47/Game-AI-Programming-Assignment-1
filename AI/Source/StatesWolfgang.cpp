@@ -109,15 +109,13 @@ void StateWolfgangSatiated::Enter(GameObject* go)
 {
 	go->moveSpeed = SATIATED_SPEED;
 
-	int distance[] = { 1, 1 };
 	
-	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_WOLFGANG, 1, distance));
 }
 
 void StateWolfgangSatiated::Update(double dt, GameObject* go)
 {
 	go->hunger -= HUNGER_DROP_RATE * static_cast<float>(dt);
-	if (go->hunger < 80.f)
+	if (go->hunger <= 75.f)
 		go->sm->SetNextState("StateWolfgangNeutral", go);
 }
 
