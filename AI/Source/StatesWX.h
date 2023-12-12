@@ -1,39 +1,51 @@
-#ifndef STATES_NIGHTMARE_H
-#define STATES_NIGHTMARE_H
+#ifndef STATES_WX_H
+#define STATES_WX_H
 
 #include "State.h"
 #include "GameObject.h"
 
-class StateNightmareHungry : public State
+class StateWXNeutral : public State
 {
 public:
-	StateNightmareHungry(const std::string &stateID);
-	virtual ~StateNightmareHungry();
+	StateWXNeutral(const std::string &stateID);
+	virtual ~StateWXNeutral();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
 
-class StateNightmareChase : public State
+class StateWXLowPower : public State
 {
 public:
-	StateNightmareChase(const std::string &stateID);
-	virtual ~StateNightmareChase();
+	StateWXLowPower(const std::string &stateID);
+	virtual ~StateWXLowPower();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
 
-class StateNightmareSatiated : public State
+class StateWXEnergised : public State
 {
 public:
-	StateNightmareSatiated(const std::string &stateID);
-	virtual ~StateNightmareSatiated();
+	StateWXEnergised(const std::string &stateID);
+	virtual ~StateWXEnergised();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
+
+class StateWXDead : public State
+{
+public:
+	StateWXDead(const std::string &stateID);
+	virtual ~StateWXDead();
+
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
+};
+
 #endif
