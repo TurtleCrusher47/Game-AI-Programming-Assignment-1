@@ -15,6 +15,18 @@ public:
 	virtual void Exit(GameObject* go);
 };
 
+class StateBeefaloBreeding : public State
+{
+public:
+	StateBeefaloBreeding(const std::string &stateID);
+	virtual ~StateBeefaloBreeding();
+
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
+};
+
+
 class StateBeefaloAngry : public State
 {
 public:

@@ -97,6 +97,7 @@ void SceneA1::InitStateMachines()
 	sm->AddState(new StateBeefaloWander("StateBeefaloWander"));
 	sm->AddState(new StateBeefaloAngry("StateBeefaloAngry"));
 	sm->AddState(new StateBeefaloDead("StateBeefaloDead"));
+	sm->AddState(new StateBeefaloBreeding("StateBeefaloBreeding"));
 
 	//all Clockwork will share this statemachine
 	sm = m_stateMachines[GameObject::GO_CLOCKWORK];
@@ -190,7 +191,8 @@ void SceneA1::Update(double dt)
 		go->damage = 34;
 		go->attackCooldown = 3;
 		go->attackCooldownTimer = go->attackCooldown;
-		go->sm->SetNextState("StateBeefaloWander", go);
+		go->breedingCooldown = 6;
+		go->sm->SetNextState("StateBeefaloBreeding", go);
 		go->isAngry = false;
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))
@@ -456,6 +458,8 @@ void SceneA1::RenderGO(GameObject *go)
 				RenderMesh(meshList[GEO_BEEFALOANGRY], false);
 			else if (go->sm->GetCurrentState(go) == "StateBeefaloDead")
 				RenderMesh(meshList[GEO_BEEFALODEAD], false);
+			else
+				RenderMesh(meshList[GEO_BEEFALO], false);
 		}
 
 		modelStack.PushMatrix();
@@ -758,8 +762,6 @@ void SceneA1::ProcessMessages()
 				go->scale.Set(sceneData.GetGridSize(), sceneData.GetGridSize(), sceneData.GetGridSize());
 				go->pos.Set(sceneData.GetGridOffset() + tileX * sceneData.GetGridSize(),
 							sceneData.GetGridOffset() + tileY * sceneData.GetGridSize(), 0);
-				go->target = go->pos;
-				go->moveSpeed = FOOD_SPEED;
 
 				if (go->type == GameObject::GO_FISH) //case: shark spawns fish
 				{
@@ -769,6 +771,18 @@ void SceneA1::ProcessMessages()
 				else if (go->type == GameObject::GO_FISHFOOD) //case: fish spawns food
 				{
 					go->sm->SetNextState("Grow", go);
+				}
+				else if (go->type == GameObject::GO_BEEFALO) //case: shark spawns fish
+				{
+					go->target = go->pos;
+					go->nearest = NULL;
+					go->health = 50;
+					go->damage = 34;
+					go->attackCooldown = 3;
+					go->attackCooldownTimer = go->attackCooldown;
+					go->breedingCooldown = 6;
+					go->sm->SetNextState("StateBeefaloWander", go);
+					go->isAngry = false;
 				}
 			}
 		}

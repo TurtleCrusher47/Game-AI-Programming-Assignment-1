@@ -22,15 +22,50 @@ StateBeefaloWander::~StateBeefaloWander()
 void StateBeefaloWander::Enter(GameObject* go)
 {
 	go->moveSpeed = WANDER_SPEED;
+	go->breedingCooldownTimer = 0;
 }
 
 void StateBeefaloWander::Update(double dt, GameObject* go)
 {
+	go->breedingCooldownTimer += static_cast<float>(dt);
+
+	if (go->breedingCooldownTimer >= go->breedingCooldown)
+	{
+		go->sm->SetNextState("StateBeefaloBreeding", go);
+	}
 }
 
 void StateBeefaloWander::Exit(GameObject* go)
 {
+	go->breedingCooldownTimer = 0;
 }
+
+StateBeefaloBreeding::StateBeefaloBreeding(const std::string & stateID)
+	: State(stateID)
+{
+}
+
+StateBeefaloBreeding::~StateBeefaloBreeding()
+{
+}
+
+void StateBeefaloBreeding::Enter(GameObject* go)
+{
+	int distance[] = { 1, 1 };
+	
+	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_BEEFALO, 1, distance));
+
+	std::cout << "Spawn beefalo" << std::endl;
+}
+
+void StateBeefaloBreeding::Update(double dt, GameObject* go)
+{
+}
+
+void StateBeefaloBreeding::Exit(GameObject* go)
+{
+}
+
 
 StateBeefaloAngry::StateBeefaloAngry(const std::string & stateID)
 	: State(stateID)
