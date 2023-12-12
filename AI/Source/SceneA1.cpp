@@ -262,7 +262,6 @@ void SceneA1::Update(double dt)
 	static bool bNState = false;
 	if (!bNState && Application::IsKeyPressed('N'))
 	{
-		bNState = true;
 
 		GameObject *go = FetchGO(GameObject::GO_WX);
 		go->scale.Set(gridSize, gridSize, gridSize);
@@ -275,6 +274,7 @@ void SceneA1::Update(double dt)
 		go->attackCooldownTimer = go->attackCooldown;
 
 		go->sm->SetNextState("StateWXNeutral", go);
+		bNState = true;
 		
 	}
 	else if (bNState && !Application::IsKeyPressed('N'))
@@ -560,6 +560,7 @@ void SceneA1::RenderGO(GameObject *go)
 				RenderMesh(meshList[GEO_WOLFGANGDEAD], false);
 		}
 		modelStack.PushMatrix();
+		ss.str("");
 		ss.precision(3);
 		ss << "[" << go->health << "]";
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
@@ -568,6 +569,7 @@ void SceneA1::RenderGO(GameObject *go)
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
+		ss.str("");
 		ss.precision(3);
 		ss << "[" << go->hunger << "]";
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
@@ -594,6 +596,7 @@ void SceneA1::RenderGO(GameObject *go)
 				RenderMesh(meshList[GEO_WXDEAD], false);
 		}
 		modelStack.PushMatrix();
+		ss.str("");
 		ss.precision(3);
 		ss << "[" << go->health << "]";
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
@@ -602,6 +605,7 @@ void SceneA1::RenderGO(GameObject *go)
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
+		ss.str("");
 		ss.precision(3);
 		ss << "[" << go->power << "]";
 		modelStack.Scale(0.5f, 0.5f, 0.5f);
