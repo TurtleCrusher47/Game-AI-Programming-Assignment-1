@@ -4,36 +4,48 @@
 #include "State.h"
 #include "GameObject.h"
 
-class StateNightmareHungry : public State
+class StateWolfgangNeutral : public State
 {
 public:
-	StateNightmareHungry(const std::string &stateID);
-	virtual ~StateNightmareHungry();
+	StateWolfgangNeutral(const std::string &stateID);
+	virtual ~StateWolfgangNeutral();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
 
-class StateNightmareChase : public State
+class StateWolfgangHungry : public State
 {
 public:
-	StateNightmareChase(const std::string &stateID);
-	virtual ~StateNightmareChase();
+	StateWolfgangHungry(const std::string &stateID);
+	virtual ~StateWolfgangHungry();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
 
-class StateNightmareSatiated : public State
+class StateWolfgangSatiated : public State
 {
 public:
-	StateNightmareSatiated(const std::string &stateID);
-	virtual ~StateNightmareSatiated();
+	StateWolfgangSatiated(const std::string &stateID);
+	virtual ~StateWolfgangSatiated();
 
 	virtual void Enter(GameObject* go);
 	virtual void Update(double dt, GameObject* go);
 	virtual void Exit(GameObject* go);
 };
+
+class StateWolfgangDead : public State
+{
+public:
+	StateWolfgangDead(const std::string &stateID);
+	virtual ~StateWolfgangDead();
+
+	virtual void Enter(GameObject* go);
+	virtual void Update(double dt, GameObject* go);
+	virtual void Exit(GameObject* go);
+};
+
 #endif

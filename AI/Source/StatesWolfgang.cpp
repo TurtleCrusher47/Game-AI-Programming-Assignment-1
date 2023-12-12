@@ -1,4 +1,4 @@
-#include "StatesNightmare.h"
+#include "StatesWolfgang.h"
 #include "PostOffice.h"
 #include "ConcreteMessages.h"
 #include "SceneData.h"
@@ -9,16 +9,16 @@ static const float CHASE_SPEED = 10.f;
 
 static const float HUNGRY_SPEED = 7.f;
 
-StateNightmareHungry::StateNightmareHungry(const std::string & stateID)
+StateWolfgangNeutral::StateWolfgangNeutral(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateNightmareHungry::~StateNightmareHungry()
+StateWolfgangNeutral::~StateWolfgangNeutral()
 {
 }
 
-void StateNightmareHungry::Enter(GameObject* go)
+void StateWolfgangNeutral::Enter(GameObject* go)
 {
 	go->moveSpeed = HUNGRY_SPEED;
 	go->nearest = NULL;
@@ -26,13 +26,13 @@ void StateNightmareHungry::Enter(GameObject* go)
 }
 
 // Wander around until an enemy comes within range, then change to chase state and chase that enemy
-void StateNightmareHungry::Update(double dt, GameObject* go)
+void StateWolfgangNeutral::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
 	if (go->nearest)
 	{
-		go->sm->SetNextState("StateNightmareChase", go);
+		go->sm->SetNextState("StateWolfgangHungry", go);
 		std::cout << "chase" << std::endl;
 		std::cout << go->nearest << std::endl;
 	}
@@ -52,25 +52,25 @@ void StateNightmareHungry::Update(double dt, GameObject* go)
 	}
 }
 
-void StateNightmareHungry::Exit(GameObject* go)
+void StateWolfgangNeutral::Exit(GameObject* go)
 {
 }
 
-StateNightmareChase::StateNightmareChase(const std::string & stateID)
+StateWolfgangHungry::StateWolfgangHungry(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateNightmareChase::~StateNightmareChase()
+StateWolfgangHungry::~StateWolfgangHungry()
 {
 }
 
-void StateNightmareChase::Enter(GameObject* go)
+void StateWolfgangHungry::Enter(GameObject* go)
 {
 	go->moveSpeed = CHASE_SPEED;
 }
 
-void StateNightmareChase::Update(double dt, GameObject* go)
+void StateWolfgangHungry::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
@@ -105,27 +105,27 @@ void StateNightmareChase::Update(double dt, GameObject* go)
 	}
 }
 
-void StateNightmareChase::Exit(GameObject* go)
+void StateWolfgangHungry::Exit(GameObject* go)
 {
 }
 
-StateNightmareSatiated::StateNightmareSatiated(const std::string & stateID)
+StateWolfgangSatiated::StateWolfgangSatiated(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateNightmareSatiated::~StateNightmareSatiated()
+StateWolfgangSatiated::~StateWolfgangSatiated()
 {
 }
 
-void StateNightmareSatiated::Enter(GameObject* go)
+void StateWolfgangSatiated::Enter(GameObject* go)
 {
 	//go->moveSpeed = HUNGRY_SPEED;
 	go->countDown = 3.f;
 	go->moveSpeed = 0;
 }
 
-void StateNightmareSatiated::Update(double dt, GameObject* go)
+void StateWolfgangSatiated::Update(double dt, GameObject* go)
 {
 	go->countDown -= static_cast<float>(dt);
 	if (go->countDown <= 0)
@@ -148,6 +148,50 @@ void StateNightmareSatiated::Update(double dt, GameObject* go)
 	}
 }
 
-void StateNightmareSatiated::Exit(GameObject* go)
+void StateWolfgangSatiated::Exit(GameObject* go)
 {
 }
+
+StateWolfgangDead::StateWolfgangDead(const std::string & stateID)
+	: State(stateID)
+{
+}
+
+StateWolfgangDead::~StateWolfgangDead()
+{
+}
+
+void StateWolfgangDead::Enter(GameObject* go)
+{
+	//go->moveSpeed = HUNGRY_SPEED;
+	go->countDown = 3.f;
+	go->moveSpeed = 0;
+}
+
+void StateWolfgangDead::Update(double dt, GameObject* go)
+{
+	go->countDown -= static_cast<float>(dt);
+	if (go->countDown <= 0)
+	{
+		go->active = false;
+
+		if (go->nearest == NULL)
+			return;
+
+		if ((go->pos - go->nearest->pos).Length() <= 3 * SceneData::GetInstance()->GetGridSize())
+		{
+			go->nearest->health -= 30;
+
+			if (go->nearest->health <= 0)
+			{
+				if (go->nearest->type == GameObject::GO_BEEFALO)
+				go->nearest->sm->SetNextState("StateBeefaloDead", go->nearest);
+			}
+		}
+	}
+}
+
+void StateWolfgangDead::Exit(GameObject* go)
+{
+}
+
