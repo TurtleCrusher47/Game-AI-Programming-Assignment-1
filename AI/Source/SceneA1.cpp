@@ -711,23 +711,25 @@ void SceneA1::Update(double dt)
 	//week 4
 	//Counting objects
 	int objectCount = 0;
-	m_numGO[GameObject::GO_FISH] = m_numGO[GameObject::GO_SHARK] = m_numGO[GameObject::GO_FISHFOOD] = 0;
+	m_numGO[GameObject::GO_BEEFALO] = m_numGO[GameObject::GO_CLOCKWORK] = m_numGO[GameObject::GO_WOLFGANG] = m_numGO[GameObject::GO_WX] = 0;
 
 	//create message on the stack, then pass the address of message to each gameobject
 	//i.e. everyone shares the same message. fewer allocation of memory.
 	MessageCheckActive msgCheckActive = MessageCheckActive();
-	MessageCheckFish msgCheckFish = MessageCheckFish();
-	MessageCheckFood msgCheckFood = MessageCheckFood();
-	MessageCheckShark msgCheckShark = MessageCheckShark();
+	MessageCheckBeefalo messageCheckBeefalo = MessageCheckBeefalo();
+	MessageCheckClockwork messageCheckClockwork = MessageCheckClockwork();
+	MessageCheckWolfgang messageCheckWolfgang = MessageCheckWolfgang();
+	MessageCheckWX messageCheckWX = MessageCheckWX();
 	for (GameObject* go : m_goList)
 	{
 		//since PostOffice does not support sending to multiple observers under
 		//a single key, we opt for this approach
 		//consider changing PostOffice to support this functionality if you want! :)
 		objectCount += static_cast<int>(go->Handle(&msgCheckActive));
-		m_numGO[GameObject::GO_FISH] += static_cast<int>(go->Handle(&msgCheckFish));
-		m_numGO[GameObject::GO_FISHFOOD] += static_cast<int>(go->Handle(&msgCheckFood));
-		m_numGO[GameObject::GO_SHARK] += static_cast<int>(go->Handle(&msgCheckShark));
+		m_numGO[GameObject::GO_BEEFALO] += static_cast<int>(go->Handle(&messageCheckBeefalo));
+		m_numGO[GameObject::GO_CLOCKWORK] += static_cast<int>(go->Handle(&messageCheckClockwork));
+		m_numGO[GameObject::GO_WOLFGANG] += static_cast<int>(go->Handle(&messageCheckWolfgang));
+		m_numGO[GameObject::GO_WX] += static_cast<int>(go->Handle(&messageCheckWX));
 	}
 
 	SceneData::GetInstance()->SetObjectCount(objectCount);
@@ -978,16 +980,20 @@ void SceneA1::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 9);
 
 	ss.str("");
-	ss << "Fishes:" << m_numGO[GameObject::GO_FISH];
+	ss << "Beefalo:" << m_numGO[GameObject::GO_BEEFALO];
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 18);
 
 	ss.str("");
-	ss << "Shark:" << m_numGO[GameObject::GO_SHARK];
+	ss << "Clockwork:" << m_numGO[GameObject::GO_CLOCKWORK];
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 15);
 
 	ss.str("");
-	ss << "Food:" << m_numGO[GameObject::GO_FISHFOOD];
+	ss << "Wolfgang:" << m_numGO[GameObject::GO_WOLFGANG];
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 12);
+
+	ss.str("");
+	ss << "WX:" << m_numGO[GameObject::GO_WX];
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 50, 21);
 	
 	RenderTextOnScreen(meshList[GEO_TEXT], "Savannah", Color(0, 1, 0), 3, 50, 0);
 }

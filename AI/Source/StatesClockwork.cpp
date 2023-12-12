@@ -142,6 +142,11 @@ void StateClockworkDead::Update(double dt, GameObject* go)
 				if (go->nearest->type == GameObject::GO_WOLFGANG)
 				go->nearest->sm->SetNextState("StateWolfgangDead", go->nearest);
 			}
+			else if (go->nearest->health <= 0)
+			{
+				if (go->nearest->type == GameObject::GO_WX)
+				go->nearest->sm->SetNextState("StateWXDead", go->nearest);
+			}
 		}
 	}
 }

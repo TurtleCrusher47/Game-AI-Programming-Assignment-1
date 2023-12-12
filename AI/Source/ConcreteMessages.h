@@ -45,6 +45,27 @@ struct MessageCheckShark : public Message
 	MessageCheckShark() {}
 };
 
+struct MessageCheckBeefalo : public Message
+{
+	MessageCheckBeefalo() {}
+};
+
+struct MessageCheckClockwork : public Message
+{
+	MessageCheckClockwork() {}
+};
+
+struct MessageCheckWolfgang : public Message
+{
+	MessageCheckWolfgang() {}
+};
+
+struct MessageCheckWX : public Message
+{
+	MessageCheckWX() {}
+};
+
+
 //week 5
 //this message asks the scene to spawn an object
 struct MessageSpawn : public Message
