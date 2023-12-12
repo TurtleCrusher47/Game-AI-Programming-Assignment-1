@@ -192,7 +192,7 @@ void SceneA1::Update(double dt)
 		go->attackCooldown = 3;
 		go->attackCooldownTimer = go->attackCooldown;
 		go->breedingCooldown = 6;
-		go->sm->SetNextState("StateBeefaloBreeding", go);
+		go->sm->SetNextState("StateBeefaloWander", go);
 		go->isAngry = false;
 	}
 	else if (bSpaceState && !Application::IsKeyPressed(VK_SPACE))

@@ -55,7 +55,7 @@ void StateBeefaloBreeding::Enter(GameObject* go)
 	
 	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_BEEFALO, 1, distance));
 
-	std::cout << "Spawn beefalo" << std::endl;
+	go->sm->SetNextState("StateBeefaloWander", go);
 }
 
 void StateBeefaloBreeding::Update(double dt, GameObject* go)
