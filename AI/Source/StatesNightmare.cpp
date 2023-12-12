@@ -4,10 +4,10 @@
 #include "SceneData.h"
 
 static const float MESSAGE_INTERVAL = 1.f;
-static const float ENERGY_DROP_RATE = 0.2f;
+static const float HUNGER_DROP_RATE = 0.3f;
 static const float CHASE_SPEED = 10.f;
 
-static const float WANDER_SPEED = 5.f;
+static const float HUNGRY_SPEED = 7.f;
 
 StateNightmareHungry::StateNightmareHungry(const std::string & stateID)
 	: State(stateID)
@@ -20,7 +20,7 @@ StateNightmareHungry::~StateNightmareHungry()
 
 void StateNightmareHungry::Enter(GameObject* go)
 {
-	go->moveSpeed = WANDER_SPEED;
+	go->moveSpeed = HUNGRY_SPEED;
 	go->nearest = NULL;
 	go->countDown = 0;
 }
