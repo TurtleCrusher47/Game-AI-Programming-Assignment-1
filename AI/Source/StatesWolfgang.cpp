@@ -8,6 +8,7 @@ static const float HUNGER_DROP_RATE = 6.f;
 static const float CHASE_SPEED = 10.f;
 static const float NEUTRAL_SPEED = 5.f;
 static const float HUNGRY_SPEED = 7.f;
+static const float SATIATED_SPEED = 0.f;
 
 StateWolfgangNeutral::StateWolfgangNeutral(const std::string & stateID)
 	: State(stateID)
@@ -31,8 +32,8 @@ void StateWolfgangNeutral::Update(double dt, GameObject* go)
 	go->hunger -= HUNGER_DROP_RATE * static_cast<float>(dt);
 	if (go->hunger < 60.f)
 		go->sm->SetNextState("StateWolfgangHungry", go);
-	/*else if (go->hunger > 80)
-		go->sm->SetNextState("StateWolfgangSatiated", go);*/
+	else if (go->hunger > 80)
+		go->sm->SetNextState("StateWolfgangSatiated", go);
 }
 
 void StateWolfgangNeutral::Exit(GameObject* go)
@@ -81,11 +82,6 @@ void StateWolfgangHungry::Update(double dt, GameObject* go)
 		{
 			go->countDown -= MESSAGE_INTERVAL;
 
-			//week 4
-			//send message to Scene requesting for nearest to be updated
-			//message is allocated on the heap (WARNING: expensive. 
-			//either refactor PostOffice to not assume heap-allocated messages,
-			//or pool messages to avoid real-time heap allocation)
 			const float ENEMY_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
 			PostOffice::GetInstance()->Send("Scene", 
 				new MessageWRU(go, MessageWRU::NEAREST_BEEFALO, ENEMY_DIST));
@@ -109,32 +105,18 @@ StateWolfgangSatiated::~StateWolfgangSatiated()
 
 void StateWolfgangSatiated::Enter(GameObject* go)
 {
-	//go->moveSpeed = HUNGRY_SPEED;
-	go->countDown = 3.f;
-	go->moveSpeed = 0;
+	go->moveSpeed = SATIATED_SPEED;
+
+	int distance[] = { 1, 1 };
+	
+	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_WOLFGANG, 1, distance));
 }
 
 void StateWolfgangSatiated::Update(double dt, GameObject* go)
 {
-	go->countDown -= static_cast<float>(dt);
-	if (go->countDown <= 0)
-	{
-		go->active = false;
-
-		if (go->nearest == NULL)
-			return;
-
-		if ((go->pos - go->nearest->pos).Length() <= 3 * SceneData::GetInstance()->GetGridSize())
-		{
-			go->nearest->health -= 30;
-
-			if (go->nearest->health <= 0)
-			{
-				if (go->nearest->type == GameObject::GO_BEEFALO)
-				go->nearest->sm->SetNextState("StateBeefaloDead", go->nearest);
-			}
-		}
-	}
+	go->hunger -= HUNGER_DROP_RATE * static_cast<float>(dt);
+	if (go->hunger < 80.f)
+		go->sm->SetNextState("StateWolfgangNeutral", go);
 }
 
 void StateWolfgangSatiated::Exit(GameObject* go)

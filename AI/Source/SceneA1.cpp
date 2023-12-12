@@ -249,7 +249,7 @@ void SceneA1::Update(double dt)
 		go->nearest = NULL;
 		go->health = 100;
 		go->damage = 40;
-		go->hunger = 100;
+		go->hunger = 70;
 		go->hungry = false;
 		go->attackCooldown = 1;
 		go->attackCooldownTimer = go->attackCooldown;
@@ -1048,6 +1048,19 @@ void SceneA1::ProcessMessages()
 					go->breedingCooldown = 6;
 					go->sm->SetNextState("StateBeefaloWander", go);
 					go->isAngry = false;
+				}
+				else if (go->type == GameObject::GO_WOLFGANG)
+				{
+					go->target = go->pos;
+					go->nearest = NULL;
+					go->health = 100;
+					go->damage = 40;
+					go->hunger = 70;
+					go->hungry = false;
+					go->attackCooldown = 1;
+					go->attackCooldownTimer = go->attackCooldown;
+
+					go->sm->SetNextState("StateWolfgangNeutral", go);
 				}
 			}
 		}
