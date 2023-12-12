@@ -49,6 +49,8 @@ struct GameObject : public ObjectBase
 	float hunger;
 	bool hungry;
 	float power;
+	float deathCountdown;
+	bool canSpawn;
 	GameObject *nearest;
 	bool moveLeft;
 	bool moveRight;

@@ -8,6 +8,7 @@ GameObject::GameObject(GAMEOBJECT_TYPE typeValue)
 	mass(1.f),
 	moveSpeed(1.f),
 	energy(10.f),
+	power(70.f),
 	sm(NULL),
 	nearest(NULL),
 	nextState(nullptr),
