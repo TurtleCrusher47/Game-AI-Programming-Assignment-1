@@ -241,16 +241,47 @@ void SceneA1::Update(double dt)
 	if (!bBState && Application::IsKeyPressed('B'))
 	{
 		bBState = true;
-		GameObject *go = FetchGO(GameObject::GO_SHARK);
+
+		GameObject *go = FetchGO(GameObject::GO_WOLFGANG);
 		go->scale.Set(gridSize, gridSize, gridSize);
 		go->pos.Set(gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, 0);
 		go->target = go->pos;
-		go->sm->SetNextState("Happy", go);
+		go->nearest = NULL;
+		go->health = 100;
+		go->damage = 40;
+		go->hunger = 100;
+		go->attackCooldown = 1;
+		go->attackCooldownTimer = go->attackCooldown;
+
+		go->sm->SetNextState("StateWolfgangNeutral", go);	
 	}
 	else if (bBState && !Application::IsKeyPressed('B'))
 	{
 		bBState = false;
 	}
+	static bool bNState = false;
+	if (!bNState && Application::IsKeyPressed('N'))
+	{
+		bNState = true;
+
+		GameObject *go = FetchGO(GameObject::GO_WX);
+		go->scale.Set(gridSize, gridSize, gridSize);
+		go->pos.Set(gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, noGrid - 1) * gridSize, 0);
+		go->target = go->pos;
+		go->nearest = NULL;
+		go->health = 100;
+		go->damage = 20;
+		go->attackCooldown = 1;
+		go->attackCooldownTimer = go->attackCooldown;
+
+		go->sm->SetNextState("StateWXNeutral", go);
+		
+	}
+	else if (bNState && !Application::IsKeyPressed('N'))
+	{
+		bNState = false;
+	}
+
 
 	//StateMachine
 	for (std::vector<GameObject *>::iterator it = m_goList.begin(); it != m_goList.end(); ++it)
@@ -510,6 +541,74 @@ void SceneA1::RenderGO(GameObject *go)
 		modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, SceneData::GetInstance()->GetGridSize() / 4, 0);
 		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
 		modelStack.PopMatrix();
+		modelStack.PopMatrix();
+		break;
+	case GameObject::GO_WOLFGANG:
+		modelStack.PushMatrix();
+		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+
+		if (go->sm)
+		{
+			if (go->sm->GetCurrentState(go) == "StateWolfgangNeutral")
+				RenderMesh(meshList[GEO_WOLFGANG], false);
+			else if (go->sm->GetCurrentState(go) == "StateWolfgangHungry")
+				RenderMesh(meshList[GEO_WOLFGANGHUNGRY], false);
+			else if (go->sm->GetCurrentState(go) == "StateWolfgangSatiated")
+				RenderMesh(meshList[GEO_WOLFGANGSATIATED], false);
+			else
+				RenderMesh(meshList[GEO_WOLFGANGDEAD], false);
+		}
+		modelStack.PushMatrix();
+		ss.precision(3);
+		ss << "[" << go->health << "]";
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, SceneData::GetInstance()->GetGridSize() / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		ss.precision(3);
+		ss << "[" << go->hunger << "]";
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(0, -SceneData::GetInstance()->GetGridSize() / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		modelStack.PopMatrix();
+
+		modelStack.PopMatrix();
+		break;
+	case GameObject::GO_WX:
+		modelStack.PushMatrix();
+		modelStack.Translate(go->pos.x, go->pos.y, zOffset);
+		modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+
+		if (go->sm)
+		{
+			if (go->sm->GetCurrentState(go) == "StateWXNeutral")
+				RenderMesh(meshList[GEO_WX], false);
+			else if (go->sm->GetCurrentState(go) == "StateWXLowPower")
+				RenderMesh(meshList[GEO_WXLOWPOWER], false);
+			else if (go->sm->GetCurrentState(go) == "StateWXEnergised")
+				RenderMesh(meshList[GEO_WXENERGISED], false);
+			else
+				RenderMesh(meshList[GEO_WXDEAD], false);
+		}
+		modelStack.PushMatrix();
+		ss.precision(3);
+		ss << "[" << go->health << "]";
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(-SceneData::GetInstance()->GetGridSize() / 4, SceneData::GetInstance()->GetGridSize() / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		ss.precision(3);
+		ss << "[" << go->power << "]";
+		modelStack.Scale(0.5f, 0.5f, 0.5f);
+		modelStack.Translate(0, -SceneData::GetInstance()->GetGridSize() / 4, 0);
+		RenderText(meshList[GEO_TEXT], ss.str(), Color(0, 0, 0));
+		modelStack.PopMatrix();
+
 		modelStack.PopMatrix();
 		break;
 	case GameObject::GO_FISHFOOD:

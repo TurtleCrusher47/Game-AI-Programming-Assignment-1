@@ -33,8 +33,6 @@ void StateClockworkWander::Update(double dt, GameObject* go)
 	if (go->nearest)
 	{
 		go->sm->SetNextState("StateClockworkChase", go);
-		std::cout << "chase" << std::endl;
-		std::cout << go->nearest << std::endl;
 	}
 	else
 	{

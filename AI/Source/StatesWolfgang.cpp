@@ -6,7 +6,7 @@
 static const float MESSAGE_INTERVAL = 1.f;
 static const float HUNGER_DROP_RATE = 0.3f;
 static const float CHASE_SPEED = 10.f;
-
+static const float NEUTRAL_SPEED = 5.f;
 static const float HUNGRY_SPEED = 7.f;
 
 StateWolfgangNeutral::StateWolfgangNeutral(const std::string & stateID)
@@ -20,7 +20,7 @@ StateWolfgangNeutral::~StateWolfgangNeutral()
 
 void StateWolfgangNeutral::Enter(GameObject* go)
 {
-	go->moveSpeed = HUNGRY_SPEED;
+	go->moveSpeed = NEUTRAL_SPEED;
 	go->nearest = NULL;
 	go->countDown = 0;
 }
@@ -28,28 +28,9 @@ void StateWolfgangNeutral::Enter(GameObject* go)
 // Wander around until an enemy comes within range, then change to chase state and chase that enemy
 void StateWolfgangNeutral::Update(double dt, GameObject* go)
 {
-	go->countDown += static_cast<float>(dt);
-
-	if (go->nearest)
-	{
+	go->energy -= HUNGER_DROP_RATE * static_cast<float>(dt);
+	if (go->energy < 50.f)
 		go->sm->SetNextState("StateWolfgangHungry", go);
-		std::cout << "chase" << std::endl;
-		std::cout << go->nearest << std::endl;
-	}
-	else
-	{
-		if (go->countDown >= MESSAGE_INTERVAL) //ensure at least 1 second interval between messages
-		{
-			go->countDown -= MESSAGE_INTERVAL;
-
-
-			std::cout << "Check" << std::endl;
-
-			const float ENEMY_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
-				PostOffice::GetInstance()->Send("Scene", 
-					new MessageWRU(go, MessageWRU::NEAREST_DAMAGEABLE, ENEMY_DIST));
-		}
-	}
 }
 
 void StateWolfgangNeutral::Exit(GameObject* go)
