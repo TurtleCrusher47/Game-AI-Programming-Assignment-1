@@ -209,7 +209,7 @@ void SceneA1::Update(double dt)
 		go->damage = 34;
 		go->attackCooldown = 3;
 		go->attackCooldownTimer = go->attackCooldown;
-		go->breedingCooldown = 6;
+		go->breedingCooldown = 15;
 		go->sm->SetNextState("StateBeefaloWander", go);
 		go->isAngry = false;
 	}
@@ -1045,7 +1045,7 @@ void SceneA1::ProcessMessages()
 					go->damage = 34;
 					go->attackCooldown = 3;
 					go->attackCooldownTimer = go->attackCooldown;
-					go->breedingCooldown = 6;
+					go->breedingCooldown = 15;
 					go->sm->SetNextState("StateBeefaloWander", go);
 					go->isAngry = false;
 				}

@@ -59,6 +59,8 @@ void StateWolfgangHungry::Update(double dt, GameObject* go)
 {
 	if (go->hunger > 60)
 		go->sm->SetNextState("StateWolfgangNeutral", go);
+	if (go->hunger <= 0)
+		go->sm->SetNextState("StateWolfgangDead", go);
 
 	go->hunger -= HUNGER_DROP_RATE * static_cast<float>(dt);
 	go->countDown += static_cast<float>(dt);
