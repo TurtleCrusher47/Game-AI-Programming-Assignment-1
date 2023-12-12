@@ -68,7 +68,7 @@ void SceneA1::Init()
 void SceneA1::InitStateMachines()
 {
 	m_stateMachines.insert(std::make_pair(GameObject::GO_FISH, new StateMachine()));
-	m_stateMachines.insert(std::make_pair(GameObject::GO_FISHFOOD, new StateMachine()));
+	//m_stateMachines.insert(std::make_pair(GameObject::GO_FISHFOOD, new StateMachine()));
 	m_stateMachines.insert(std::make_pair(GameObject::GO_SHARK, new StateMachine()));
 
 	m_stateMachines.insert(std::make_pair(GameObject::GO_BEEFALO, new StateMachine()));
@@ -82,9 +82,9 @@ void SceneA1::InitStateMachines()
 	sm->AddState(new StateDead("Dead"));
 
 	//all food will share this statemachine
-	sm = m_stateMachines[GameObject::GO_FISHFOOD];
+	/*sm = m_stateMachines[GameObject::GO_FISHFOOD];
 	sm->AddState(new StateEvolve("Evolve"));
-	sm->AddState(new StateGrow("Grow"));
+	sm->AddState(new StateGrow("Grow"));*/
 
 	//all shark will share this statemachine
 	sm = m_stateMachines[GameObject::GO_SHARK];
