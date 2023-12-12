@@ -21,6 +21,8 @@ struct GameObject : public ObjectBase
 		GO_NIGHTMARE,
 		GO_CLOCKWORK,
 		GO_BEEFALO,
+		GO_WOLFGANG,
+		GO_WX,
 		GO_BLACK,
 		GO_WHITE,
 		GO_TOTAL, //must be last

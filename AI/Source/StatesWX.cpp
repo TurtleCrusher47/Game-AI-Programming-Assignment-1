@@ -1,38 +1,38 @@
-#include "StatesClockwork.h"
+#include "StatesNightmare.h"
 #include "PostOffice.h"
 #include "ConcreteMessages.h"
 #include "SceneData.h"
 
 static const float MESSAGE_INTERVAL = 1.f;
-static const float ENERGY_DROP_RATE = 0.2f;
+static const float HUNGER_DROP_RATE = 0.3f;
 static const float CHASE_SPEED = 10.f;
 
-static const float WANDER_SPEED = 5.f;
+static const float HUNGRY_SPEED = 7.f;
 
-StateClockworkWander::StateClockworkWander(const std::string & stateID)
+StateNightmareHungry::StateNightmareHungry(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateClockworkWander::~StateClockworkWander()
+StateNightmareHungry::~StateNightmareHungry()
 {
 }
 
-void StateClockworkWander::Enter(GameObject* go)
+void StateNightmareHungry::Enter(GameObject* go)
 {
-	go->moveSpeed = WANDER_SPEED;
+	go->moveSpeed = HUNGRY_SPEED;
 	go->nearest = NULL;
 	go->countDown = 0;
 }
 
 // Wander around until an enemy comes within range, then change to chase state and chase that enemy
-void StateClockworkWander::Update(double dt, GameObject* go)
+void StateNightmareHungry::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
 	if (go->nearest)
 	{
-		go->sm->SetNextState("StateClockworkChase", go);
+		go->sm->SetNextState("StateNightmareChase", go);
 		std::cout << "chase" << std::endl;
 		std::cout << go->nearest << std::endl;
 	}
@@ -47,30 +47,30 @@ void StateClockworkWander::Update(double dt, GameObject* go)
 
 			const float ENEMY_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
 				PostOffice::GetInstance()->Send("Scene", 
-					new MessageWRU(go, MessageWRU::NEAREST_PLAYER, ENEMY_DIST));
+					new MessageWRU(go, MessageWRU::NEAREST_DAMAGEABLE, ENEMY_DIST));
 		}
 	}
 }
 
-void StateClockworkWander::Exit(GameObject* go)
+void StateNightmareHungry::Exit(GameObject* go)
 {
 }
 
-StateClockworkChase::StateClockworkChase(const std::string & stateID)
+StateNightmareChase::StateNightmareChase(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateClockworkChase::~StateClockworkChase()
+StateNightmareChase::~StateNightmareChase()
 {
 }
 
-void StateClockworkChase::Enter(GameObject* go)
+void StateNightmareChase::Enter(GameObject* go)
 {
 	go->moveSpeed = CHASE_SPEED;
 }
 
-void StateClockworkChase::Update(double dt, GameObject* go)
+void StateNightmareChase::Update(double dt, GameObject* go)
 {
 	go->countDown += static_cast<float>(dt);
 
@@ -105,27 +105,27 @@ void StateClockworkChase::Update(double dt, GameObject* go)
 	}
 }
 
-void StateClockworkChase::Exit(GameObject* go)
+void StateNightmareChase::Exit(GameObject* go)
 {
 }
 
-StateClockworkDead::StateClockworkDead(const std::string & stateID)
+StateNightmareSatiated::StateNightmareSatiated(const std::string & stateID)
 	: State(stateID)
 {
 }
 
-StateClockworkDead::~StateClockworkDead()
+StateNightmareSatiated::~StateNightmareSatiated()
 {
 }
 
-void StateClockworkDead::Enter(GameObject* go)
+void StateNightmareSatiated::Enter(GameObject* go)
 {
 	//go->moveSpeed = HUNGRY_SPEED;
 	go->countDown = 3.f;
 	go->moveSpeed = 0;
 }
 
-void StateClockworkDead::Update(double dt, GameObject* go)
+void StateNightmareSatiated::Update(double dt, GameObject* go)
 {
 	go->countDown -= static_cast<float>(dt);
 	if (go->countDown <= 0)
@@ -148,6 +148,6 @@ void StateClockworkDead::Update(double dt, GameObject* go)
 	}
 }
 
-void StateClockworkDead::Exit(GameObject* go)
+void StateNightmareSatiated::Exit(GameObject* go)
 {
 }

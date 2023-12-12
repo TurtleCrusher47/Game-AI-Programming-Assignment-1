@@ -681,10 +681,21 @@ void SceneA1::ProcessMessages()
 					{
 						nearestDistance = distance;
 						go->nearest = go2;
-
-						std::cout << go->nearest->type << std::endl;
 					}
 				}
+				// Message to look for nearest player
+				if (messageWRU->type == MessageWRU::NEAREST_PLAYER &&
+					(go2->type == GameObject::GO_WOLFGANG ||
+					go2->type == GameObject::GO_WX))
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < messageWRU->threshold && distance < nearestDistance)
+					{
+						nearestDistance = distance;
+						go->nearest = go2;
+					}
+				}
+
 
 
 				////message indicates go is hunting for nearest fish food
