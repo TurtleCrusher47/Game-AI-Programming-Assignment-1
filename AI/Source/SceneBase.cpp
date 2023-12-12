@@ -166,6 +166,23 @@ void SceneBase::Init()
 	meshList[GEO_BEEFALOANGRY]->textureID = LoadTGA("Image//beefalo_angy.tga");
 	meshList[GEO_BEEFALODEAD] = MeshBuilder::GenerateQuad("beefalodead", Color(1, 1, 1));
 	meshList[GEO_BEEFALODEAD]->textureID = LoadTGA("Image//beefalo_ded.tga");
+	meshList[GEO_WOLFGANG] = MeshBuilder::GenerateQuad("wolfgangneutral", Color(1, 1, 1));
+	meshList[GEO_WOLFGANG]->textureID = LoadTGA("Image//wolfgang_neutral.tga");
+	meshList[GEO_WOLFGANGHUNGRY] = MeshBuilder::GenerateQuad("wolfganghungry", Color(1, 1, 1));
+	meshList[GEO_WOLFGANGHUNGRY]->textureID = LoadTGA("Image//wolfgang_hungry.tga");
+	meshList[GEO_WOLFGANGSATIATED] = MeshBuilder::GenerateQuad("wolfgangsatiated", Color(1, 1, 1));
+	meshList[GEO_WOLFGANGSATIATED]->textureID = LoadTGA("Image//wolfgang_satiated.tga");
+	meshList[GEO_WOLFGANGDEAD] = MeshBuilder::GenerateQuad("wolfgangdead", Color(1, 1, 1));
+	meshList[GEO_WOLFGANGDEAD]->textureID = LoadTGA("Image//wolfgang_dead.tga");
+	meshList[GEO_WX] = MeshBuilder::GenerateQuad("wxneutral", Color(1, 1, 1));
+	meshList[GEO_WX]->textureID = LoadTGA("Image//wx_neutral.tga");
+	meshList[GEO_WXLOWPOWER] = MeshBuilder::GenerateQuad("wxlowpower", Color(1, 1, 1));
+	meshList[GEO_WXLOWPOWER]->textureID = LoadTGA("Image//wx_lowpower.tga");
+	meshList[GEO_WXENERGISED] = MeshBuilder::GenerateQuad("wxenergised", Color(1, 1, 1));
+	meshList[GEO_WXENERGISED]->textureID = LoadTGA("Image//wx_energised.tga");
+	meshList[GEO_WXDEAD] = MeshBuilder::GenerateQuad("wxdead", Color(1, 1, 1));
+	meshList[GEO_WXDEAD]->textureID = LoadTGA("Image//wx_dead.tga");
+
 
 
 	bLightEnabled = false;
