@@ -7,6 +7,8 @@
 #include "StatesFishFood.h"
 #include "StatesBeefalo.h"
 #include "StatesClockwork.h"
+#include "StatesWolfgang.h"
+#include "StatesWX.h"
 #include "SceneData.h"
 #include "PostOffice.h"
 #include "ConcreteMessages.h"
@@ -73,6 +75,8 @@ void SceneA1::InitStateMachines()
 
 	m_stateMachines.insert(std::make_pair(GameObject::GO_BEEFALO, new StateMachine()));
 	m_stateMachines.insert(std::make_pair(GameObject::GO_CLOCKWORK, new StateMachine()));
+	m_stateMachines.insert(std::make_pair(GameObject::GO_WOLFGANG, new StateMachine()));
+	m_stateMachines.insert(std::make_pair(GameObject::GO_WX, new StateMachine()));
 	
 	//all fish will share this statemachine
 	StateMachine* sm = m_stateMachines[GameObject::GO_FISH];
@@ -104,6 +108,20 @@ void SceneA1::InitStateMachines()
 	sm->AddState(new StateClockworkWander("StateClockworkWander"));
 	sm->AddState(new StateClockworkChase("StateClockworkChase"));
 	sm->AddState(new StateClockworkDead("StateClockworkDead"));
+
+	//all Wolfgang will share this statemachine
+	sm = m_stateMachines[GameObject::GO_WOLFGANG];
+	sm->AddState(new StateWolfgangNeutral("StateWolfgangNeutral"));
+	sm->AddState(new StateWolfgangHungry("StateWolfgangHungry"));
+	sm->AddState(new StateWolfgangSatiated("StateWolfgangSatiated"));
+	sm->AddState(new StateWolfgangDead("StateWolfgangDead"));
+
+	//all WX will share this statemachine
+	sm = m_stateMachines[GameObject::GO_WX];
+	sm->AddState(new StateWXNeutral("StateWXNeutral"));
+	sm->AddState(new StateWXLowPower("StateWXLowPower"));
+	sm->AddState(new StateWXEnergised("StateWXEnergised"));
+	sm->AddState(new StateWXDead("StateWXDead"));
 }
 
 GameObject* SceneA1::FetchGO(GameObject::GAMEOBJECT_TYPE type)
