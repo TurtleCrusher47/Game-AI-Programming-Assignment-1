@@ -47,6 +47,7 @@ struct GameObject : public ObjectBase
 	float breedingCooldown;
 	float countDown;
 	float hunger;
+	bool hungry;
 	float power;
 	GameObject *nearest;
 	bool moveLeft;

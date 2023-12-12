@@ -4,7 +4,7 @@
 #include "SceneData.h"
 
 static const float MESSAGE_INTERVAL = 1.f;
-static const float HUNGER_DROP_RATE = 0.3f;
+static const float HUNGER_DROP_RATE = 6.f;
 static const float CHASE_SPEED = 10.f;
 static const float NEUTRAL_SPEED = 5.f;
 static const float HUNGRY_SPEED = 7.f;
@@ -20,7 +20,7 @@ StateWolfgangNeutral::~StateWolfgangNeutral()
 
 void StateWolfgangNeutral::Enter(GameObject* go)
 {
-	go->moveSpeed = NEUTRAL_SPEED;
+	go->moveSpeed = HUNGRY_SPEED;
 	go->nearest = NULL;
 	go->countDown = 0;
 }
@@ -28,9 +28,11 @@ void StateWolfgangNeutral::Enter(GameObject* go)
 // Wander around until an enemy comes within range, then change to chase state and chase that enemy
 void StateWolfgangNeutral::Update(double dt, GameObject* go)
 {
-	go->energy -= HUNGER_DROP_RATE * static_cast<float>(dt);
-	if (go->energy < 50.f)
+	go->hunger -= HUNGER_DROP_RATE * static_cast<float>(dt);
+	if (go->hunger < 60.f)
 		go->sm->SetNextState("StateWolfgangHungry", go);
+	/*else if (go->hunger > 80)
+		go->sm->SetNextState("StateWolfgangSatiated", go);*/
 }
 
 void StateWolfgangNeutral::Exit(GameObject* go)
@@ -49,14 +51,19 @@ StateWolfgangHungry::~StateWolfgangHungry()
 void StateWolfgangHungry::Enter(GameObject* go)
 {
 	go->moveSpeed = CHASE_SPEED;
+	go->hungry = true;
 }
 
 void StateWolfgangHungry::Update(double dt, GameObject* go)
 {
+	if (go->hunger > 60)
+		go->sm->SetNextState("StateWolfgangNeutral", go);
+
+	go->hunger -= HUNGER_DROP_RATE * static_cast<float>(dt);
 	go->countDown += static_cast<float>(dt);
 
 	go->moveLeft = go->moveRight = go->moveUp = go->moveDown = true;
-	//once nearest is set, clockwork will chase it
+	//once nearest is set, wolfgang will chase it
 	if (go->nearest)
 	{
 		if (go->nearest->pos.x > go->pos.x)
@@ -81,13 +88,14 @@ void StateWolfgangHungry::Update(double dt, GameObject* go)
 			//or pool messages to avoid real-time heap allocation)
 			const float ENEMY_DIST = 10.f * SceneData::GetInstance()->GetGridSize();
 			PostOffice::GetInstance()->Send("Scene", 
-				new MessageWRU(go, MessageWRU::NEAREST_DAMAGEABLE, ENEMY_DIST));
+				new MessageWRU(go, MessageWRU::NEAREST_BEEFALO, ENEMY_DIST));
 		}
 	}
 }
 
 void StateWolfgangHungry::Exit(GameObject* go)
 {
+	go->hungry = false;
 }
 
 StateWolfgangSatiated::StateWolfgangSatiated(const std::string & stateID)

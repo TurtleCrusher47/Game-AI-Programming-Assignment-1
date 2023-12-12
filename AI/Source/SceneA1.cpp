@@ -250,6 +250,7 @@ void SceneA1::Update(double dt)
 		go->health = 100;
 		go->damage = 40;
 		go->hunger = 100;
+		go->hungry = false;
 		go->attackCooldown = 1;
 		go->attackCooldownTimer = go->attackCooldown;
 
@@ -349,7 +350,6 @@ void SceneA1::Update(double dt)
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
 					{
-						std::cout << "Angry beefalo hit" << std::endl;
 						if (go->attackCooldownTimer >= go->attackCooldown)
 						{
 							go2->health -= go->damage;
@@ -361,7 +361,30 @@ void SceneA1::Update(double dt)
 					if (go2->health <= 0)
 					{
 						go2->sm->SetNextState("StateClockworkDead", go2);
-						//go2->active = false;
+
+						if (go->health > 0)
+						{
+							go->sm->SetNextState("StateBeefaloWander", go);
+							go->isAngry = false;
+						}
+					}
+				}
+				if (go2->type == GameObject::GO_WOLFGANG)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateWolfgangDead", go2);
 
 						if (go->health > 0)
 						{
@@ -373,6 +396,106 @@ void SceneA1::Update(double dt)
 			}
 		}
 		if (go->type == GameObject::GO_CLOCKWORK)
+		{
+			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			{
+				GameObject *go2 = (GameObject *)*it2;
+				if (!go2->active)
+					continue;
+				if (go2->type == GameObject::GO_BEEFALO)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						go2->sm->SetNextState("StateBeefaloAngry", go2);
+						go2->isAngry = true;
+						go2->nearest = go;
+
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateBeefaloDead", go2);
+						//go2->active = false;
+
+						if (go->health > 0)
+						{
+							go->sm->SetNextState("StateClockworkWander", go);
+						}
+					}
+				}
+				else if (go2->type == GameObject::GO_WOLFGANG)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						go2->nearest = go;
+
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateWolfgangDead", go2);
+
+						if (go->health > 0)
+						{
+							go->sm->SetNextState("StateClockworkWander", go);
+						}
+					}
+				}
+			}
+		}
+		if (go->type == GameObject::GO_WOLFGANG)
+		{
+
+			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
+			{
+				GameObject *go2 = (GameObject *)*it2;
+				if (!go2->active)
+					continue;
+				if (go2->type == GameObject::GO_BEEFALO)
+				{
+					// Only attack the beefalo if wolfgang is hungry
+					if (!go->hungry)
+						continue;
+
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < gridSize)
+					{
+						go2->sm->SetNextState("StateBeefaloAngry", go2);
+						go2->isAngry = true;
+						go2->nearest = go;
+
+						if (go->attackCooldownTimer >= go->attackCooldown)
+						{
+							go2->health -= go->damage;
+							go->attackCooldownTimer = 0;
+						}
+					}
+					// Check if gameobject's health is less than or equal to 0
+					if (go2->health <= 0)
+					{
+						go2->sm->SetNextState("StateBeefaloDead", go2);
+
+						if (go->health > 0)
+						{
+							go->hunger += 50;
+						}
+					}
+				}
+			}
+		}
+		if (go->type == GameObject::GO_WX)
 		{
 			for (std::vector<GameObject *>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
@@ -816,7 +939,17 @@ void SceneA1::ProcessMessages()
 						go->nearest = go2;
 					}
 				}
-
+				// Message to look for nearest beefalo
+				if (messageWRU->type == MessageWRU::NEAREST_BEEFALO &&
+					go2->type == GameObject::GO_BEEFALO)
+				{
+					float distance = (go->pos - go2->pos).Length();
+					if (distance < messageWRU->threshold && distance < nearestDistance)
+					{
+						nearestDistance = distance;
+						go->nearest = go2;
+					}
+				}
 
 
 				////message indicates go is hunting for nearest fish food
