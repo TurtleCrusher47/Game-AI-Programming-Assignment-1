@@ -63,6 +63,77 @@ void SceneA1::Init()
 	//register this scene with the "post office"
 	//post office will now be capable of addressing this scene with messages
 	PostOffice::GetInstance()->Register("Scene", this);
+
+	for (int i = 0; i < 5; i++)
+    {
+        GameObject* go = FetchGO(GameObject::GO_BEEFALO);
+        
+		go->scale.Set(gridSize, gridSize, gridSize);
+		go->pos.Set(gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, 0);
+		go->target = go->pos;
+		go->nearest = NULL;
+		go->health = 50;
+		go->damage = 34;
+		go->attackCooldown = 3;
+		go->attackCooldownTimer = go->attackCooldown;
+		go->breedingCooldown = 9;
+		go->sm->SetNextState("StateBeefaloWander", go);
+		go->isAngry = false;
+
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        GameObject* go = FetchGO(GameObject::GO_CLOCKWORK);
+        
+		go->scale.Set(gridSize, gridSize, gridSize);
+		go->pos.Set(gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, 0);
+		go->target = go->pos;
+		go->nearest = NULL;
+		go->health = 30;
+		go->damage = 40;
+		go->attackCooldown = 2;
+		go->attackCooldownTimer = go->attackCooldown;
+
+		go->sm->SetNextState("StateClockworkWander", go);
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        GameObject* go = FetchGO(GameObject::GO_WOLFGANG);
+        
+		go->scale.Set(gridSize, gridSize, gridSize);
+		go->pos.Set(gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, 0);
+		go->target = go->pos;
+		go->nearest = NULL;
+		go->health = 100;
+		go->damage = 40;
+		go->hunger = 70;
+		go->hungry = false;
+		go->attackCooldown = 1;
+		go->attackCooldownTimer = go->attackCooldown;
+
+		go->sm->SetNextState("StateWolfgangNeutral", go);
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        GameObject* go = FetchGO(GameObject::GO_WX);
+       
+		go->scale.Set(gridSize, gridSize, gridSize);
+		go->pos.Set(gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, gridOffset + Math::RandIntMinMax(0, numGrid - 1) * gridSize, 0);
+		go->target = go->pos;
+		go->nearest = NULL;
+		go->health = 100;
+		go->damage = 20;
+		go->attackCooldown = 1;
+		go->attackCooldownTimer = go->attackCooldown;
+		go->power = 70;
+		go->deathCountdown = 100;
+		go->canSpawn = true;
+
+		go->sm->SetNextState("StateWXNeutral", go);
+    }
 }
 
 //week 5
@@ -209,7 +280,7 @@ void SceneA1::Update(double dt)
 		go->damage = 34;
 		go->attackCooldown = 3;
 		go->attackCooldownTimer = go->attackCooldown;
-		go->breedingCooldown = 15;
+		go->breedingCooldown = 9;
 		go->sm->SetNextState("StateBeefaloWander", go);
 		go->isAngry = false;
 	}
@@ -1074,7 +1145,7 @@ void SceneA1::ProcessMessages()
 					go->damage = 34;
 					go->attackCooldown = 3;
 					go->attackCooldownTimer = go->attackCooldown;
-					go->breedingCooldown = 15;
+					go->breedingCooldown = 9;
 					go->sm->SetNextState("StateBeefaloWander", go);
 					go->isAngry = false;
 				}
