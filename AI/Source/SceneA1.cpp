@@ -141,7 +141,7 @@ void SceneA1::Init()
 void SceneA1::InitStateMachines()
 {
 	m_stateMachines.insert(std::make_pair(GameObject::GO_FISH, new StateMachine()));
-	//m_stateMachines.insert(std::make_pair(GameObject::GO_FISHFOOD, new StateMachine()));
+	m_stateMachines.insert(std::make_pair(GameObject::GO_FISHFOOD, new StateMachine()));
 	m_stateMachines.insert(std::make_pair(GameObject::GO_SHARK, new StateMachine()));
 
 	m_stateMachines.insert(std::make_pair(GameObject::GO_BEEFALO, new StateMachine()));
@@ -157,9 +157,9 @@ void SceneA1::InitStateMachines()
 	sm->AddState(new StateDead("Dead"));
 
 	//all food will share this statemachine
-	/*sm = m_stateMachines[GameObject::GO_FISHFOOD];
+	sm = m_stateMachines[GameObject::GO_FISHFOOD];
 	sm->AddState(new StateEvolve("Evolve"));
-	sm->AddState(new StateGrow("Grow"));*/
+	sm->AddState(new StateGrow("Grow"));
 
 	//all shark will share this statemachine
 	sm = m_stateMachines[GameObject::GO_SHARK];
@@ -389,7 +389,7 @@ void SceneA1::Update(double dt)
 				continue;
 			for (std::vector<GameObject*>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
-				GameObject *go2 = (GameObject*)*it2;
+				GameObject* go2 = (GameObject *)*it2;
 				if (!go2->active)
 					continue;
 				if (go2->type == GameObject::GO_CLOCKWORK)
@@ -416,7 +416,7 @@ void SceneA1::Update(double dt)
 						}
 					}
 				}
-				if (go2->type == GameObject::GO_WOLFGANG)
+				else if (go2->type == GameObject::GO_WOLFGANG)
 				{
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
@@ -440,7 +440,7 @@ void SceneA1::Update(double dt)
 						}
 					}
 				}
-				if (go2->type == GameObject::GO_WX)
+				else if (go2->type == GameObject::GO_WX)
 				{
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
@@ -466,11 +466,11 @@ void SceneA1::Update(double dt)
 				}
 			}
 		}
-		if (go->type == GameObject::GO_CLOCKWORK)
+		else if (go->type == GameObject::GO_CLOCKWORK)
 		{
 			for (std::vector<GameObject*>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
-				GameObject* go2 = (GameObject*)*it2;
+				GameObject* go2 = (GameObject *)*it2;
 				if (!go2->active)
 					continue;
 				if (go2->type == GameObject::GO_BEEFALO)
@@ -550,11 +550,11 @@ void SceneA1::Update(double dt)
 				}
 			}
 		}
-		if (go->type == GameObject::GO_WOLFGANG)
+		else if (go->type == GameObject::GO_WOLFGANG)
 		{
 			for (std::vector<GameObject*>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
-				GameObject* go2 = (GameObject*)*it2;
+				GameObject* go2 = (GameObject *)*it2;
 				if (!go2->active)
 					continue;
 				if (go2->type == GameObject::GO_BEEFALO)
@@ -575,19 +575,19 @@ void SceneA1::Update(double dt)
 							go2->health -= go->damage;
 							go->attackCooldownTimer = 0;
 						}
-					}
-					// Check if gameobject's health is less than or equal to 0
-					if (go2->health <= 0)
-					{
-						go2->sm->SetNextState("StateBeefaloDead", go2);
-
-						if (go->health > 0)
+						// Check if gameobject's health is less than or equal to 0
+						if (go2->health <= 0)
 						{
-							go->hunger += 20;
+							go2->sm->SetNextState("StateBeefaloDead", go2);
+
+							if (go->health > 0)
+							{
+								go->hunger += 20;
+							}
 						}
 					}
 				}
-				if (go2->type == GameObject::GO_CLOCKWORK)
+				else if (go2->type == GameObject::GO_CLOCKWORK)
 				{
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
@@ -611,11 +611,11 @@ void SceneA1::Update(double dt)
 				}
 			}
 		}
-		if (go->type == GameObject::GO_WX)
+		else if (go->type == GameObject::GO_WX)
 		{
 			for (std::vector<GameObject*>::iterator it2 = m_goList.begin(); it2 != m_goList.end(); ++it2)
 			{
-				GameObject* go2 = (GameObject*)*it2;
+				GameObject* go2 = (GameObject *)*it2;
 				if (!go2->active)
 					continue;
 				if (go2->type == GameObject::GO_BEEFALO)
@@ -631,21 +631,21 @@ void SceneA1::Update(double dt)
 						{
 							go2->health -= go->damage;
 							go->attackCooldownTimer = 0;
-						}
-					}
-					// Check if gameobject's health is less than or equal to 0
-					if (go2->health <= 0)
-					{
-						go2->sm->SetNextState("StateBeefaloDead", go2);
-						//go2->active = false;
+							// Check if gameobject's health is less than or equal to 0
+							if (go2->health <= 0)
+							{
+								go2->sm->SetNextState("StateBeefaloDead", go2);
+								//go2->active = false;
 
-						if (go->health > 0)
-						{
-							go->power += 2;
+								if (go->health > 0)
+								{
+									go->power += 2;
+								}
+							}
 						}
 					}
 				}
-				if (go2->type == GameObject::GO_CLOCKWORK)
+				else if (go2->type == GameObject::GO_CLOCKWORK)
 				{
 					float distance = (go->pos - go2->pos).Length();
 					if (distance < gridSize)
@@ -1080,7 +1080,7 @@ void SceneA1::ProcessMessages()
 					}
 				}
 				// Message to look for nearest player
-				if (messageWRU->type == MessageWRU::NEAREST_PLAYER &&
+				else if (messageWRU->type == MessageWRU::NEAREST_PLAYER &&
 					(go2->type == GameObject::GO_WOLFGANG ||
 					go2->type == GameObject::GO_WX))
 				{
@@ -1092,7 +1092,7 @@ void SceneA1::ProcessMessages()
 					}
 				}
 				// Message to look for nearest beefalo
-				if (messageWRU->type == MessageWRU::NEAREST_BEEFALO &&
+				else if (messageWRU->type == MessageWRU::NEAREST_BEEFALO &&
 					go2->type == GameObject::GO_BEEFALO)
 				{
 					float distance = (go->pos - go2->pos).Length();
@@ -1145,6 +1145,7 @@ void SceneA1::ProcessMessages()
 				}
 				else if (go->type == GameObject::GO_BEEFALO) //case: shark spawns fish
 				{
+					go->sm->SetNextState("StateBeefaloWander", go);
 					go->target = go->pos;
 					go->nearest = NULL;
 					go->health = 50;
@@ -1152,11 +1153,11 @@ void SceneA1::ProcessMessages()
 					go->attackCooldown = 3;
 					go->attackCooldownTimer = go->attackCooldown;
 					go->breedingCooldown = 9;
-					go->sm->SetNextState("StateBeefaloWander", go);
 					go->isAngry = false;
 				}
 				else if (go->type == GameObject::GO_WOLFGANG)
 				{
+					go->sm->SetNextState("StateWolfgangNeutral", go);
 					go->target = go->pos;
 					go->nearest = NULL;
 					go->health = 100;
@@ -1166,10 +1167,10 @@ void SceneA1::ProcessMessages()
 					go->attackCooldown = 1;
 					go->attackCooldownTimer = go->attackCooldown;
 
-					go->sm->SetNextState("StateWolfgangNeutral", go);
 				}
 				else if (go->type == GameObject::GO_WX)
 				{
+					go->sm->SetNextState("StateWXNeutral", go);
 					go->target = go->pos;
 					go->nearest = NULL;
 					go->health = 100;
@@ -1180,7 +1181,6 @@ void SceneA1::ProcessMessages()
 					go->deathCountdown = 100;
 					go->canSpawn = false;
 
-					go->sm->SetNextState("StateWXNeutral", go);
 				}
 			}
 		}

@@ -107,9 +107,10 @@ StateWolfgangSatiated::~StateWolfgangSatiated()
 
 void StateWolfgangSatiated::Enter(GameObject* go)
 {
+	//std::cout << "Spawn" << go << std::endl;
 	go->moveSpeed = SATIATED_SPEED;
 
-	int distance[] = { 1, 1 };
+	int distance[] = { 3, 6 };
 	PostOffice::GetInstance()->Send("Scene", new MessageSpawn(go, GameObject::GO_WOLFGANG, 1, distance));
 }
 
